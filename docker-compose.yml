@@ -1,0 +1,17 @@
+version: '3'
+services:
+  quiz-local-ui:
+    build: ./quiz-ui/
+    image: quiz-local-ui
+    ports:
+      - "3000:80"
+    container_name: quiz-local-ui
+    restart: unless-stopped
+  quiz-local-api:
+    build: ./quiz-ui/
+    image: quiz-local-api
+    ports:
+      - "5000:5000"
+    container_name: quiz-local-api
+    restart: unless-stopped
+
