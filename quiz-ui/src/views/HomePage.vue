@@ -1,5 +1,4 @@
 <script lang="ts">
-import { RouterLink } from 'vue-router'
 import quizApiService from "@/services/QuizApiService";
 import type { QuizInfo } from "@/types/quiz";
 export default {
@@ -17,11 +16,6 @@ export default {
       console.log(error);
     });
   },
-  setup() {
-    return {
-      RouterLink
-    };
-  }
 };
 </script>
 
@@ -29,5 +23,5 @@ export default {
   <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.date.toISOString()">
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
-  <RouterLink to="/start-new-quiz-page">Démarrer le quiz !</RouterLink>
+  <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link>
 </template>
