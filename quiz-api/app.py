@@ -1,5 +1,6 @@
 from flask import Flask, request
 import jwt_utils
+import db
 
 app = Flask(__name__)
 
@@ -16,7 +17,15 @@ def GetQuizInfo():
 def Login():
     payload = request.get_json()
     token = jwt_utils.build_token()
+    q_db = db.QuizDatabase()
+    q_db.execute_sql("INSERT INTO Question (title) VALUES ('What is the capital of France?');")
     return {"token":token}, 200
+
+#Récupérer le token envoyé en paramètre
+#request.headers.get('Authorization')
+
+#récupèrer un l'objet json envoyé dans le body de la requète
+#request.get_json()
 
 if __name__ == "__main__":
     app.run()
