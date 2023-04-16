@@ -1,11 +1,17 @@
-<script setup lang="ts">
-
+<script lang="ts">
+import QuestionManager from '@/components/QuestionManager.vue';
+export default {
+  name: "QuestionsPage",
+  components: {
+    QuestionManager: QuestionManager,
+  },
+}
 </script>
 
 <template>
-  <main>
-    <h1>This is a Questions page</h1>
-  </main>
+  <v-sheet width="700" class="mx-auto">
+    <QuestionManager />
+  </v-sheet>
 </template>
 
 <style scoped></style>

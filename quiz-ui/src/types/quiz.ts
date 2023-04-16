@@ -7,3 +7,12 @@ export type Score = {
 export type QuizInfo = {
   registeredScores: Array<Score>
 }
+
+export type Question = {
+  image?: string
+  video?: string
+  title: string
+  text: string
+  possibleAnswers: Array<string>
+  correctAnswerIndex: number
+}
