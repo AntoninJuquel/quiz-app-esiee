@@ -1,4 +1,5 @@
 <script lang="ts">
+import quizApiService from "@/services/QuizApiService";
 import QuestionDipslay from '@/components/QuestionDisplay.vue';
 import type { Question } from '@/types/quiz';
 
@@ -6,30 +7,29 @@ export default {
     data() {
         return {
             currentQuestionPosition: 1,
-            totalNumberOfQuestion: 0,
+            totalNumberOfQuestions: 0,
             currentQuestion: {} as Question,
         };
     },
     methods: {
-        loadQuestionByPosition() {
-            this.currentQuestion = {
-                image: "https://picsum.photos/200/300",
-                title: "Question 1",
-                text: 'What is the capital of France?',
-                possibleAnswers: [
-                    "Paris",
-                    "London",
-                    "Berlin",
-                    "Rome",
-                ],
-                correctAnswerIndex: 0,
-            }
+        async loadQuestionByPosition() {
+            await quizApiService.getQuestion(this.currentQuestionPosition).then(response => {
+                [this.currentQuestion] = response.data;
+                this.totalNumberOfQuestions = 4;
+            }).catch(error => {
+                console.log(error);
+            });
         },
         answerClickedHandler(answerIndex: number) {
-            console.log('answer clicked', answerIndex)
+            if(this.currentQuestionPosition < this.totalNumberOfQuestions) {
+                this.currentQuestionPosition++;
+                this.loadQuestionByPosition();
+            } else {
+                this.endQuiz();
+            }
         },
         endQuiz() {
-
+            this.$router.push('/your-score');
         }
     },
     created() {
@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <h1>Question {{ currentQuestionPosition }} / {{ totalNumberOfQuestion }}</h1>
+    <h1>Question {{ currentQuestionPosition }} / {{ totalNumberOfQuestions }}</h1>
     <QuestionDisplay :question="currentQuestion" @answer-selected="answerClickedHandler" />
 </template>
 

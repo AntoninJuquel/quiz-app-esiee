@@ -4,14 +4,16 @@ import type { QuizInfo } from "@/types/quiz";
 export default {
   name: "HomePage",
   data() {
-    const data: QuizInfo = {
+    const data: {
+      registeredScores: QuizInfo;
+    } = {
       registeredScores: []
     };
     return data;
   },
   async created() {
     await quizApiService.getQuizInfo().then(response => {
-      this.registeredScores = response.data.registeredScores;
+      this.registeredScores = response.data;
     }).catch(error => {
       console.log(error);
     });
@@ -20,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.date.toISOString()">
+  <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.playerName">
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
   <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link>

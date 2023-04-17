@@ -13,10 +13,10 @@ export default {
 </script>
 
 <template>
-    <img v-if="question.image" :src="question.image" />
-    <h1>{{ question.title }}</h1>
-    <p>{{ question.text }}</p>
-    <v-btn v-for="(answer, index) in question.possibleAnswers" :key="answer" block
+    <img v-if="question?.image" :src="question?.image" />
+    <h1>{{ question?.title }}</h1>
+    <p>{{ question?.text }}</p>
+    <v-btn v-for="(answer, index) in question?.possibleAnswers" :key="answer" block
         @click="$emit('answer-selected', index)">{{
             answer
         }}</v-btn>

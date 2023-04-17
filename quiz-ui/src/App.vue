@@ -12,8 +12,9 @@
       </nav>
     </div>
   </header>
-
-  <router-view />
+  <v-sheet width="700" class="mx-auto">
+    <router-view />
+  </v-sheet>
 </template>
 
 <style scoped></style>

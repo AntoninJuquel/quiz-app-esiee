@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosHeaders } from 'axios'
-import type { QuizInfo } from '@/types/quiz'
+import type { Question, QuizInfo, Answer } from '@/types/quiz'
+import type { Score } from '@/types/quiz'
 
 const instance = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}`,
@@ -10,8 +11,9 @@ export default {
   async call<T>(
     method: string,
     resource: string,
-    data = null,
-    token = null
+    data?: Record<string, unknown>,
+    params?: Record<string, unknown>,
+    token?: string
   ): Promise<{ status: number; data: T }> {
     const headers = new AxiosHeaders({
       'Content-Type': 'application/json'
@@ -25,7 +27,8 @@ export default {
       method,
       headers,
       url: resource,
-      data
+      data,
+      params
     })
       .then((response) => {
         return { status: response.status, data: response.data }
@@ -40,6 +43,11 @@ export default {
     return this.call<QuizInfo>('get', 'quiz-info')
   },
   getQuestion(position: number) {
-    throw new Error(`Not implemented yet. Position: ${position}`)
+    return this.call<Question[]>('get', 'questions', undefined, {
+      position
+    })
+  },
+  postAnswers(answers: Answer[]) {
+    return this.call<Score>('post', 'answers', { answers })
   }
 }

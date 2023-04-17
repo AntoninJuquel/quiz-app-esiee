@@ -10,8 +10,8 @@ export default {
       },
     ],
   }),
-  methods:{
-    launchNewQuiz(){
+  methods: {
+    launchNewQuiz() {
       participationStorageService.savePlayerName(this.username);
       this.$router.push('/questions');
     },
@@ -21,12 +21,10 @@ export default {
 </script>
 
 <template>
-  <v-sheet width="300" class="mx-auto">
-    <v-form @submit.prevent="launchNewQuiz">
-      <v-text-field v-model="username" :rules="rules" label="Username" />
-      <v-btn type="submit" block class="mt-2">GO !</v-btn>
-    </v-form>
-  </v-sheet>
+  <v-form @submit.prevent="launchNewQuiz">
+    <v-text-field v-model="username" :rules="rules" label="Username" />
+    <v-btn type="submit" block class="mt-2">GO !</v-btn>
+  </v-form>
 </template>
 
 <style scoped></style>

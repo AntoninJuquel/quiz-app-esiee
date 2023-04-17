@@ -9,9 +9,7 @@ export default {
 </script>
 
 <template>
-  <v-sheet width="700" class="mx-auto">
-    <QuestionManager />
-  </v-sheet>
+  <QuestionManager />
 </template>
 
 <style scoped></style>

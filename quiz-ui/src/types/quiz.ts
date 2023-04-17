@@ -4,9 +4,7 @@ export type Score = {
   date: Date
 }
 
-export type QuizInfo = {
-  registeredScores: Array<Score>
-}
+export type QuizInfo = Array<Score>
 
 export type Question = {
   image?: string
@@ -14,5 +12,10 @@ export type Question = {
   title: string
   text: string
   possibleAnswers: Array<string>
-  correctAnswerIndex: number
+  correctAnswerIndex: number[]
+  totalNumberOfQuestions: number
+}
+
+export type Answer = {
+  answerIndex: number[]
 }
