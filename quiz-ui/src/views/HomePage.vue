@@ -1,24 +1,27 @@
 <script lang="ts">
-import quizApiService from "@/services/QuizApiService";
-import type { QuizInfo } from "@/types/quiz";
+import quizApiService from '@/services/QuizApiService'
+import type { QuizInfo } from '@/types/quiz'
 export default {
-  name: "HomePage",
+  name: 'HomePage',
   data() {
     const data: {
-      registeredScores: QuizInfo;
+      registeredScores: QuizInfo
     } = {
       registeredScores: []
-    };
-    return data;
+    }
+    return data
   },
   async created() {
-    await quizApiService.getQuizInfo().then(response => {
-      this.registeredScores = response.data;
-    }).catch(error => {
-      console.log(error);
-    });
-  },
-};
+    await quizApiService
+      .getQuizInfo()
+      .then((response) => {
+        this.registeredScores = response.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+}
 </script>
 
 <template>

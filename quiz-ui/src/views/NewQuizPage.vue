@@ -7,17 +7,16 @@ export default {
       (value: string) => {
         if (value) return true
         return 'You must enter a first name.'
-      },
-    ],
+      }
+    ]
   }),
   methods: {
     launchNewQuiz() {
-      participationStorageService.savePlayerName(this.username);
-      this.$router.push('/questions');
-    },
+      participationStorageService.savePlayerName(this.username)
+      this.$router.push('/questions')
+    }
   }
 }
-
 </script>
 
 <template>

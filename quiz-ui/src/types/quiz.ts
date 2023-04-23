@@ -12,10 +12,8 @@ export type Question = {
   title: string
   text: string
   possibleAnswers: Array<string>
-  correctAnswerIndex: number[]
+  multipleAnswers: boolean
   totalNumberOfQuestions: number
 }
 
-export type Answer = {
-  answerIndex: number[]
-}
+export type Answer = number[]

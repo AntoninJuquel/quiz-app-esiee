@@ -47,7 +47,7 @@ export default {
       position
     })
   },
-  postAnswers(answers: Answer[]) {
-    return this.call<Score>('post', 'answers', { answers })
+  postAnswers(playerName: string, answers: Answer[]) {
+    return this.call<Score>('post', 'answers', { playerName, answers })
   }
 }

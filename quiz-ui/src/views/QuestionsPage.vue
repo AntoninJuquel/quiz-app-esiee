@@ -1,10 +1,10 @@
 <script lang="ts">
-import QuestionManager from '@/components/QuestionManager.vue';
+import QuestionManager from '@/components/QuestionManager.vue'
 export default {
-  name: "QuestionsPage",
+  name: 'QuestionsPage',
   components: {
-    QuestionManager: QuestionManager,
-  },
+    QuestionManager: QuestionManager
+  }
 }
 </script>
 
