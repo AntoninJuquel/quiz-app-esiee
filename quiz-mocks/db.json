@@ -10,38 +10,52 @@
     {
       "position": 1,
       "image": "https://picsum.photos/700/393",
-      "title": "What is the capital of India?",
+      "title": "Geography",
       "text": "What is the capital of India?",
       "possibleAnswers": ["New Delhi", "Mumbai", "Kolkata", "Chennai"],
-      "correctAnswerIndex": 0,
-      "totalNumberOfQuestions": 4
+      "totalNumberOfQuestions": 5,
+      "multipleAnswers": false
     },
     {
       "position": 2,
       "image": "https://picsum.photos/700/393",
-      "title": "What is the capital of France?",
-      "text": "What is the capital of France?",
-      "possibleAnswers": ["Paris", "Mumbai", "Kolkata", "Chennai"],
-      "correctAnswerIndex": 0,
-      "totalNumberOfQuestions": 4
+      "title": "Science",
+      "text": "What is the smallest planet in our solar system?",
+      "possibleAnswers": ["Mercury", "Venus", "Earth", "Mars"],
+      "totalNumberOfQuestions": 5,
+      "multipleAnswers": false
     },
     {
       "position": 3,
       "image": "https://picsum.photos/700/393",
-      "title": "What is the capital of France?",
-      "text": "What is the capital of France?",
-      "possibleAnswers": ["Paris", "Mumbai", "Kolkata", "Chennai"],
-      "correctAnswerIndex": 0,
-      "totalNumberOfQuestions": 4
+      "title": "History",
+      "text": "In what year did World War II end?",
+      "possibleAnswers": ["1945", "1944", "1943", "1942"],
+      "totalNumberOfQuestions": 5,
+      "multipleAnswers": false
     },
     {
       "position": 4,
       "image": "https://picsum.photos/700/393",
-      "title": "What is the capital of France?",
-      "text": "What is the capital of France?",
-      "possibleAnswers": ["Paris", "Mumbai", "Kolkata", "Chennai"],
-      "correctAnswerIndex": 0,
-      "totalNumberOfQuestions": 4
+      "title": "Music",
+      "text": "Who is the lead vocalist of the band Coldplay?",
+      "possibleAnswers": [
+        "Chris Martin",
+        "Jonny Buckland",
+        "Guy Berryman",
+        "Will Champion"
+      ],
+      "totalNumberOfQuestions": 5,
+      "multipleAnswers": false
+    },
+    {
+      "position": 5,
+      "image": "https://picsum.photos/700/393",
+      "title": "Sports",
+      "text": "Which countries have won the FIFA World Cup at least twice?",
+      "possibleAnswers": ["Brazil", "Germany", "Argentina", "Italy", "Uruguay"],
+      "totalNumberOfQuestions": 5,
+      "multipleAnswers": true
     }
   ]
 }

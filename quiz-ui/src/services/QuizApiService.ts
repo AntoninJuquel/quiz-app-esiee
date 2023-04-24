@@ -43,11 +43,11 @@ export default {
     return this.call<QuizInfo>('get', 'quiz-info')
   },
   getQuestion(position: number) {
-    return this.call<Question[]>('get', 'questions', undefined, {
+    return this.call<Question>('get', 'questions', undefined, {
       position
     })
   },
   postAnswers(playerName: string, answers: Answer[]) {
-    return this.call<Score>('post', 'answers', { playerName, answers })
+    return this.call<Score>('post', 'participations', { playerName, answers })
   }
 }

@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js",
-    "mock": "json-server --watch db.json --port 5000"
+    "dev": "nodemon index.js",
+    "dev:mock": "json-server --watch db.json --port 5000"
   },
   "dependencies": {
     "express": "^4.18.2",

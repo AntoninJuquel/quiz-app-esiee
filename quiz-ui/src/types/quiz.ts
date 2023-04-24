@@ -4,16 +4,24 @@ export type Score = {
   date: Date
 }
 
-export type QuizInfo = Array<Score>
+export type QuizInfo = {
+  scores: Array<Score>
+  size: number
+}
+
+export type PossibleAnswer = {
+  text: string
+  isCorrect?: boolean
+}
 
 export type Question = {
-  image?: string
-  video?: string
+  id: string
   title: string
   text: string
-  possibleAnswers: Array<string>
+  possibleAnswers: Array<PossibleAnswer>
   multipleAnswers: boolean
-  totalNumberOfQuestions: number
+  image?: string
+  video?: string
 }
 
 export type Answer = number[]
