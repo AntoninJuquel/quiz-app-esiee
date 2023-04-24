@@ -12,7 +12,12 @@ export default {
       required: true
     }
   },
-  emits: ['answer-question']
+  emits: ['answer-question'],
+  methods: {
+    answerQuestion() {
+      this.$emit('answer-question', this.selected)
+    }
+  }
 }
 </script>
 
@@ -45,7 +50,7 @@ export default {
     </v-card-actions>
 
     <v-card-actions>
-      <v-btn color="primary" @click="$emit('answer-question', selected)">Répondre</v-btn>
+      <v-btn color="primary" @click="answerQuestion">Répondre</v-btn>
     </v-card-actions>
   </v-card>
 </template>

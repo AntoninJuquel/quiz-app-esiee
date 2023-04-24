@@ -22,6 +22,16 @@ const router = createRouter({
       path: '/quiz-results',
       name: 'QuizResultsPage',
       component: () => import('../views/QuizResultsPage.vue')
+    },
+    {
+      path: '/admin',
+      name: 'AdminPage',
+      component: () => import('../views/AdminPage.vue')
+    },
+    {
+      path: '/edit-quiz',
+      name: 'EditQuizPage',
+      component: () => import('../views/EditQuizPage.vue')
     }
   ]
 })

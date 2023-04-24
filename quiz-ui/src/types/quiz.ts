@@ -16,6 +16,7 @@ export type PossibleAnswer = {
 
 export type Question = {
   id: string
+  position: number
   title: string
   text: string
   possibleAnswers: Array<PossibleAnswer>
@@ -25,3 +26,7 @@ export type Question = {
 }
 
 export type Answer = number[]
+
+export type Token = {
+  token: string
+}

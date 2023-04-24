@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosHeaders } from 'axios'
-import type { Question, QuizInfo, Answer } from '@/types/quiz'
+import type { Question, QuizInfo, Answer, Token } from '@/types/quiz'
 import type { Score } from '@/types/quiz'
 
 const instance = axios.create({
@@ -49,5 +49,14 @@ export default {
   },
   postAnswers(playerName: string, answers: Answer[]) {
     return this.call<Score>('post', 'participations', { playerName, answers })
+  },
+  login(password: string) {
+    return this.call<Token>('post', 'login', { password })
+  },
+  createQuestion(question: Question) {
+    return this.call<Question>('post', 'question', question)
+  },
+  updateQuestion(question: Question) {
+    return this.call<Question>('put', `question/${question.position}`, question)
   }
 }
