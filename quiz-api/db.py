@@ -1,8 +1,10 @@
 import sqlite3
+import os
 
 class QuizDatabase:
     def __init__(self):
-        self.db_connection = sqlite3.connect("quiz.db")
+        self.db_path = "quiz.db"
+        self.db_connection = sqlite3.connect(self.db_path)
         self.db_connection.isolation_level = None
 
         self.db_init()
@@ -28,8 +30,31 @@ class QuizDatabase:
 
     def db_init(self):
         self.execute_sql("""
-            CREATE TABLE IF NOT EXISTS Question (
-                id INTEGER PRIMARY KEY,
-                title TEXT NOT NULL
-            )
+            CREATE TABLE question (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            text TEXT NOT NULL,
+            title TEXT,
+            image TEXT,
+            position INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT unique_question UNIQUE (text)
+            );
+
+            CREATE TABLE possible_answer (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question_id INTEGER NOT NULL,
+            text TEXT NOT NULL,
+            isCorrect BOOLEAN NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (question_id) REFERENCES question(id)
+            );
+
         """)
+
+    def rebuild_db(self):
+        try:
+            os.remove(self.db_path)
+        except:
+            raise Exception("Could not remove database file")

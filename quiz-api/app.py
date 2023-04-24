@@ -16,16 +16,23 @@ def GetQuizInfo():
 @app.route('/login', methods=['POST'])
 def Login():
     payload = request.get_json()
+    if payload['password'] != 'flask2023':
+        return {"error":"Unauthorized"}, 401
     token = jwt_utils.build_token()
-    q_db = db.QuizDatabase()
-    q_db.execute_sql("INSERT INTO Question (title) VALUES ('What is the capital of France?');")
     return {"token":token}, 200
 
-#Récupérer le token envoyé en paramètre
-#request.headers.get('Authorization')
+@app.route('/rebuild-db', methods=['POST'])
+def RebuildDB():
+    q_db = db.QuizDatabase()
+    q_db.rebuild_db()
+    return "Ok", 200
 
-#récupèrer un l'objet json envoyé dans le body de la requète
-#request.get_json()
+@app.route('/question', methods=['POST'])
+def AddQuestion():
+    payload = request.get_json()
+    q_db = db.QuizDatabase()
+    q_db.add_question(payload['question'])
+    return "Ok", 200
 
 if __name__ == "__main__":
     app.run()
