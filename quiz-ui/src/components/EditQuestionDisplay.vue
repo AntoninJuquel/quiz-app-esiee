@@ -1,16 +1,9 @@
 <script lang="ts">
-import type { PossibleAnswer, Question } from '@/types/quiz'
+import type { Question } from '@/types/quiz'
 export default {
   data() {
     return {
-      editedQuestion: {
-        id: '0',
-        position: 0,
-        title: '',
-        text: '',
-        multipleAnswers: false,
-        possibleAnswers: [] as Array<PossibleAnswer>
-      } as Question,
+      editedQuestion: {} as Question,
       newAnswer: '',
       selected: []
     }
