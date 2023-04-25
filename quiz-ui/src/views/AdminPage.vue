@@ -5,7 +5,8 @@ export default {
   data() {
     return {
       password: '',
-      rules: [(v: string) => !!v || 'Password is required']
+      rules: [(v: string) => !!v || 'Veillez entrer un mot de passe'],
+      dialog: false
     }
   },
   methods: {
@@ -19,7 +20,8 @@ export default {
         })
         .catch((error) => {
           console.log(error)
-          this.$router.push('/')
+          this.dialog = true
+          this.password = ''
         })
     }
   }
@@ -38,4 +40,14 @@ export default {
       <v-btn type="submit" block class="mt-2">Entrer !</v-btn>
     </v-form>
   </v-sheet>
+  <v-dialog v-model="dialog" width="auto" transition="dialog-top-transition">
+    <v-card>
+      <v-card-text>
+        <p class="text-body-1">Mot de passe incorrect</p>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="blue darken-1" text @click="dialog = false">Fermer</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>

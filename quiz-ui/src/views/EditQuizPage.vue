@@ -4,9 +4,14 @@ import EditQuestionDisplay from '@/components/EditQuestionDisplay.vue'
 import type { Question } from '@/types/quiz'
 export default {
   async created() {
-    await quizApiService.getQuizInfo().then((response) => {
-      this.totalNumberOfQuestions = response.data.size
-    })
+    await quizApiService
+      .getQuizInfo()
+      .then((response) => {
+        this.totalNumberOfQuestions = response.data.size
+      })
+      .catch((error) => {
+        console.log(error)
+      })
 
     this.getQuestionByPosition()
   },
@@ -15,7 +20,9 @@ export default {
       currentQuestionPosition: 0,
       totalNumberOfQuestions: 0,
       currentQuestion: {} as Question,
-      creation: false
+      creation: false,
+      dialog: false,
+      dialogActionsEnabled: false
     }
   },
   methods: {
@@ -23,14 +30,20 @@ export default {
       await quizApiService
         .getQuestion(this.currentQuestionPosition)
         .then((response) => {
+          if (response.data === null) {
+            this.createQuestion()
+            return
+          }
           this.currentQuestion = response.data
           this.creation = false
         })
         .catch((error) => {
           console.log(error)
+          this.createQuestion()
         })
     },
     saveQuestion(question: Question) {
+      console.log(question)
       if (this.creation) {
         quizApiService
           .createQuestion(question)
@@ -55,13 +68,39 @@ export default {
     createQuestion() {
       this.creation = true
       this.currentQuestion = {
-        id: '0',
+        id: this.totalNumberOfQuestions.toString(),
         position: this.totalNumberOfQuestions,
         title: '',
         text: '',
         possibleAnswers: [],
         multipleAnswers: false
       }
+    },
+    deleteQuestion(question: Question) {
+      quizApiService
+        .deleteQuestion(question.position)
+        .then(() => {
+          this.currentQuestionPosition--
+          this.getQuestionByPosition()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    async deleteAllQuestions() {
+      this.dialogActionsEnabled = false
+
+      await quizApiService
+        .deleteAllQuestions()
+        .then(() => {
+          this.currentQuestionPosition = 0
+          this.getQuestionByPosition()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
+      this.dialog = false
     }
   },
   components: {
@@ -71,7 +110,13 @@ export default {
 </script>
 
 <template>
-  <EditQuestionDisplay :question="currentQuestion" @answer-question="saveQuestion" />
+  <EditQuestionDisplay
+    :creation="creation"
+    :question="currentQuestion"
+    :totalNumberOfQuestions="totalNumberOfQuestions"
+    @save-question="saveQuestion"
+    @delete-question="deleteQuestion"
+  />
   <v-pagination
     v-model="currentQuestionPosition"
     @update:model-value="getQuestionByPosition"
@@ -79,5 +124,31 @@ export default {
   ></v-pagination>
   <v-sheet class="d-flex flex-column align-center">
     <v-btn @click="createQuestion">Créer une question</v-btn>
+    <v-btn
+      class="mt-4"
+      prepend-icon="mdi-delete-forever"
+      @click="dialog = dialogActionsEnabled = true"
+      color="error"
+      >Tout supprimer</v-btn
+    >
   </v-sheet>
+  <v-dialog v-model="dialog" width="auto" transition="dialog-bottom-transition" persistent>
+    <v-card>
+      <v-card-text>
+        <p class="text-body-1">Êtes-vous sûr de vouloir supprimer toutes les questions ?</p>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="blue darken-1" text @click="dialog = false" :disabled="!dialogActionsEnabled"
+          >Annuler</v-btn
+        >
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="deleteAllQuestions"
+          :disabled="!dialogActionsEnabled"
+          >Confirmer</v-btn
+        >
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>

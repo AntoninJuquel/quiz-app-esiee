@@ -54,9 +54,15 @@ export default {
     return this.call<Token>('post', 'login', { password })
   },
   createQuestion(question: Question) {
-    return this.call<Question>('post', 'question', question)
+    return this.call<Question>('post', 'questions', question)
   },
   updateQuestion(question: Question) {
-    return this.call<Question>('put', `question/${question.position}`, question)
+    return this.call<Question>('put', `questions/${question.position}`, question)
+  },
+  deleteQuestion(position: number) {
+    return this.call<Question>('delete', `questions/${position}`)
+  },
+  deleteAllQuestions() {
+    return this.call<Question>('delete', `questions/all`)
   }
 }
