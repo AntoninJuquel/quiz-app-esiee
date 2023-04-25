@@ -123,7 +123,7 @@ export default {
     :length="totalNumberOfQuestions"
   ></v-pagination>
   <v-sheet class="d-flex flex-column align-center">
-    <v-btn @click="createQuestion">Créer une question</v-btn>
+    <v-btn v-if="!creation" @click="createQuestion">Créer une question</v-btn>
     <v-btn
       class="mt-4"
       prepend-icon="mdi-delete-forever"
