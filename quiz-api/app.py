@@ -55,6 +55,20 @@ def GetQuestion(question_id):
     print("dumps : ", json.dumps(question))
     return json.dumps(question), 200
 
+@app.route('/questions/<int:question_id>', methods=['PUT'])
+def UpdateQuestion(question_id):
+    if check_auth_header(request.headers.get('Authorization')) is False:
+        return {"error":"Unauthorized"}, 401
+    # if question does not exist, return 404
+    payload = request.get_json()
+    question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
+    q_db = db.QuizDatabase()
+    question_exists = q_db.get_question(question_id)
+    if question_exists is None:
+        return {"error":"Not found"}, 404
+    q_db.update_question(question.to_dict())
+    return "Ok", 204
+
 @app.route('/questions', methods=['GET'])
 def GetQuestionByPosition():
     position = request.args.get('position')
@@ -71,6 +85,9 @@ def RemoveQuestion(question_id):
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
     q_db = db.QuizDatabase()
+    question_exists = q_db.get_question(question_id)
+    if question_exists is None:
+        return {"error":"Not found"}, 404
     q_db.remove_question(question_id)
     return "Ok", 200
 
