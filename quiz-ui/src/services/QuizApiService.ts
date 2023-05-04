@@ -2,6 +2,8 @@ import axios, { AxiosError, AxiosHeaders } from 'axios'
 import type { Question, QuizInfo, Answer, Token } from '@/types/quiz'
 import type { Score } from '@/types/quiz'
 
+const MULTIPLE_ANSWERS_ENABLED = false
+
 const instance = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}`,
   responseType: 'json'
@@ -48,7 +50,11 @@ export default {
     })
   },
   postAnswers(playerName: string, answers: Answer[]) {
-    return this.call<Score>('post', 'participations', { playerName, answers })
+    let computedAnswers: Answer[] | number[] = answers
+    if (!MULTIPLE_ANSWERS_ENABLED) {
+      computedAnswers = answers.flat()
+    }
+    return this.call<Score>('post', 'participations', { playerName, answers: computedAnswers })
   },
   login(password: string) {
     return this.call<Token>('post', 'login', { password })
@@ -64,5 +70,8 @@ export default {
   },
   deleteAllQuestions() {
     return this.call<Question>('delete', `questions/all`)
+  },
+  deleteAllParticipations() {
+    return this.call<Question>('delete', `participations/all`)
   }
 }

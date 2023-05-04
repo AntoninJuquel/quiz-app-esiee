@@ -1,61 +1,65 @@
 {
-  "quiz-info": [
-    {
-      "playerName": "Somindras",
-      "score": 150,
-      "date": "2023-04-16T20:57:15.499Z"
-    }
-  ],
+  "quiz-info": {
+    "size": 5,
+    "scores": [
+      {
+        "playerName": "Somindras",
+        "score": 150,
+        "date": "2023-04-16T20:57:15.499Z"
+      }
+    ]
+  },
   "questions": [
     {
-      "position": 1,
-      "image": "https://picsum.photos/700/393",
       "title": "Geography",
       "text": "What is the capital of India?",
-      "possibleAnswers": ["New Delhi", "Mumbai", "Kolkata", "Chennai"],
-      "totalNumberOfQuestions": 5,
-      "multipleAnswers": false
+      "possibleAnswers": [
+        { "text": "Mumbai", "isCorrect": false },
+        { "text": "Kolkata", "isCorrect": false },
+        { "text": "New Delhi", "isCorrect": true },
+        { "text": "Chennai", "isCorrect": false }
+      ]
     },
     {
-      "position": 2,
-      "image": "https://picsum.photos/700/393",
-      "title": "Science",
+      "title": "Astronomy",
       "text": "What is the smallest planet in our solar system?",
-      "possibleAnswers": ["Mercury", "Venus", "Earth", "Mars"],
-      "totalNumberOfQuestions": 5,
-      "multipleAnswers": false
+      "possibleAnswers": [
+        { "text": "Venus", "isCorrect": false },
+        { "text": "Mercury", "isCorrect": true },
+        { "text": "Earth", "isCorrect": false },
+        { "text": "Mars", "isCorrect": false }
+      ]
     },
     {
-      "position": 3,
-      "image": "https://picsum.photos/700/393",
       "title": "History",
       "text": "In what year did World War II end?",
-      "possibleAnswers": ["1945", "1944", "1943", "1942"],
-      "totalNumberOfQuestions": 5,
-      "multipleAnswers": false
+      "possibleAnswers": [
+        { "text": "1942", "isCorrect": false },
+        { "text": "1943", "isCorrect": false },
+        { "text": "1944", "isCorrect": false },
+        { "text": "1945", "isCorrect": true }
+      ]
     },
     {
-      "position": 4,
-      "image": "https://picsum.photos/700/393",
       "title": "Music",
       "text": "Who is the lead vocalist of the band Coldplay?",
       "possibleAnswers": [
-        "Chris Martin",
-        "Jonny Buckland",
-        "Guy Berryman",
-        "Will Champion"
-      ],
-      "totalNumberOfQuestions": 5,
-      "multipleAnswers": false
+        { "text": "JonnyBuckland", "isCorrect": false },
+        { "text": "Chris Martin", "isCorrect": true },
+        { "text": "Guy Berryman", "isCorrect": false },
+        { "text": "Will Champion", "isCorrect": false }
+      ]
     },
     {
-      "position": 5,
-      "image": "https://picsum.photos/700/393",
       "title": "Sports",
       "text": "Which countries have won the FIFA World Cup at least twice?",
-      "possibleAnswers": ["Brazil", "Germany", "Argentina", "Italy", "Uruguay"],
-      "totalNumberOfQuestions": 5,
-      "multipleAnswers": true
+      "possibleAnswers": [
+        { "text": "Brazil", "isCorrect": true },
+        { "text": "Germany", "isCorrect": false },
+        { "text": "Argentina", "isCorrect": true },
+        { "text": "Italy", "isCorrect": true },
+        { "text": "Uruguay", "isCorrect": false }
+      ]
     }
   ]
 }

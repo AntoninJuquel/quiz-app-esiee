@@ -71,8 +71,9 @@ export default {
 
 <template>
   <v-card class="mx-auto" max-width="700">
-    <v-card-title v-if="!creation">
+    <v-card-title>
       <v-text-field
+        v-if="!creation"
         density="compact"
         variant="underlined"
         prepend-icon="mdi-close"

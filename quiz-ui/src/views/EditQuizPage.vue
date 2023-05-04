@@ -101,6 +101,18 @@ export default {
         })
 
       this.dialog = false
+    },
+    async deleteAllScores() {
+      this.dialogActionsEnabled = false
+
+      await quizApiService
+        .deleteAllParticipations()
+        .then(() => {})
+        .catch((error) => {
+          console.log(error)
+        })
+
+      this.dialog = false
     }
   },
   components: {
@@ -129,7 +141,14 @@ export default {
       prepend-icon="mdi-delete-forever"
       @click="dialog = dialogActionsEnabled = true"
       color="error"
-      >Tout supprimer</v-btn
+      >Supprimer les questions</v-btn
+    >
+    <v-btn
+      class="mt-4"
+      prepend-icon="mdi-delete-forever"
+      @click="dialog = dialogActionsEnabled = true"
+      color="error"
+      >Supprimer les scores</v-btn
     >
   </v-sheet>
   <v-dialog v-model="dialog" width="auto" transition="dialog-bottom-transition" persistent>

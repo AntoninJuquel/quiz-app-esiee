@@ -16,6 +16,7 @@ export default {
   methods: {
     answerQuestion() {
       this.$emit('answer-question', this.selected)
+      this.selected = []
     }
   }
 }

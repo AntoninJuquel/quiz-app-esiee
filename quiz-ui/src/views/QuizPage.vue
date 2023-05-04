@@ -4,20 +4,33 @@ import participationStorageService from '@/services/ParticipationStorageService'
 import QuestionDisplay from '@/components/QuestionDisplay.vue'
 import type { Question, Answer } from '@/types/quiz'
 export default {
-  async created() {
-    await quizApiService.getQuizInfo().then((response) => {
-      this.totalNumberOfQuestions = response.data.size
-    })
-
-    this.getQuestionByPosition()
-  },
   data() {
     return {
-      currentQuestionPosition: 0,
       totalNumberOfQuestions: 0,
+      remainingQuestions: [] as number[],
       answers: [] as Answer[],
       currentQuestion: {} as Question
     }
+  },
+  computed: {
+    currentQuestionPosition() {
+      return this.remainingQuestions[0]
+    },
+    currentQuestionNumber() {
+      return this.totalNumberOfQuestions - this.remainingQuestions.length
+    }
+  },
+  async created() {
+    await quizApiService.getQuizInfo().then((response) => {
+      this.totalNumberOfQuestions = response.data.size
+      for (let i = 0; i < this.totalNumberOfQuestions; i++) {
+        this.remainingQuestions.push(i)
+        this.answers.push([-1] as Answer)
+      }
+      this.remainingQuestions.sort(() => Math.random() - 0.5)
+    })
+
+    this.getQuestionByPosition()
   },
   methods: {
     async getQuestionByPosition() {
@@ -31,9 +44,9 @@ export default {
         })
     },
     answerQuestion(answer: Answer) {
-      this.answers.push(answer)
-      this.currentQuestionPosition++
-      if (this.currentQuestionPosition < this.totalNumberOfQuestions) {
+      this.answers[this.currentQuestionPosition] = answer
+      this.remainingQuestions.shift()
+      if (this.remainingQuestions.length > 0) {
         this.getQuestionByPosition()
       } else {
         this.endQuiz()
