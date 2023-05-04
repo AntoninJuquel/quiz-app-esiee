@@ -1,15 +1,19 @@
 <script lang="ts">
+import { format, subSeconds } from 'date-fns'
 import quizApiService from '@/services/QuizApiService'
 import participationStorageService from '@/services/ParticipationStorageService'
 import QuestionDisplay from '@/components/QuestionDisplay.vue'
-import type { Question, Answer } from '@/types/quiz'
+import { type Question, type Answer, Difficulty } from '@/types/quiz'
 export default {
   data() {
     return {
       totalNumberOfQuestions: 0,
       remainingQuestions: [] as number[],
       answers: [] as Answer[],
-      currentQuestion: {} as Question
+      currentQuestion: {} as Question,
+      timeRemaining: 0,
+      interval: null as number | null,
+      difficulty: Difficulty.EASY
     }
   },
   computed: {
@@ -17,7 +21,12 @@ export default {
       return this.remainingQuestions[0]
     },
     currentQuestionNumber() {
-      return this.totalNumberOfQuestions - this.remainingQuestions.length
+      return this.totalNumberOfQuestions - this.remainingQuestions.length + 1
+    },
+    formatCountdown() {
+      const date = new Date(0)
+      date.setSeconds(this.timeRemaining)
+      return format(subSeconds(date, 1), 'mm:ss')
     }
   },
   async created() {
@@ -30,7 +39,41 @@ export default {
       this.remainingQuestions.sort(() => Math.random() - 0.5)
     })
 
+    this.difficulty = participationStorageService.getDifficulty()
+
+    switch (this.difficulty) {
+      case Difficulty.EASY:
+        break
+      case Difficulty.MEDIUM: {
+        this.timeRemaining = this.totalNumberOfQuestions * 10 + 1
+        this.interval = setInterval(() => {
+          this.timeRemaining--
+          if (this.timeRemaining <= 0) {
+            this.endQuiz()
+          }
+        }, 1000)
+        break
+      }
+      case Difficulty.HARD: {
+        this.timeRemaining = 6
+        this.interval = setInterval(() => {
+          this.timeRemaining--
+          if (this.timeRemaining <= 0) {
+            this.answerQuestion([-1] as Answer)
+          }
+        }, 1000)
+        break
+      }
+      default:
+        break
+    }
+
     this.getQuestionByPosition()
+  },
+  unmounted() {
+    if (this.interval) {
+      clearInterval(this.interval)
+    }
   },
   methods: {
     async getQuestionByPosition() {
@@ -47,12 +90,18 @@ export default {
       this.answers[this.currentQuestionPosition] = answer
       this.remainingQuestions.shift()
       if (this.remainingQuestions.length > 0) {
+        if (this.difficulty === Difficulty.HARD) {
+          this.timeRemaining = 6
+        }
         this.getQuestionByPosition()
       } else {
         this.endQuiz()
       }
     },
     async endQuiz() {
+      if (this.interval) {
+        clearInterval(this.interval)
+      }
       await quizApiService
         .postAnswers(participationStorageService.getPlayerName(), this.answers)
         .then((response) => {
@@ -71,5 +120,7 @@ export default {
 </script>
 
 <template>
+  <h3 class="text-h3 text-center">{{ currentQuestionNumber }} / {{ totalNumberOfQuestions }}</h3>
+  <h3 v-if="interval" class="text-h3 text-center">{{ formatCountdown }}</h3>
   <QuestionDisplay :question="currentQuestion" @answer-question="answerQuestion" />
 </template>

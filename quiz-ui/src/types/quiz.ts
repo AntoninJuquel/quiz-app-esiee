@@ -30,3 +30,9 @@ export type Answer = number[]
 export type Token = {
   token: string
 }
+
+export enum Difficulty {
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard'
+}
