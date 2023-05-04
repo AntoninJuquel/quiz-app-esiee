@@ -1,4 +1,5 @@
 from flask import Flask, request
+from models import Question
 import jwt_utils
 import db
 
@@ -27,12 +28,13 @@ def RebuildDB():
     q_db.rebuild_db()
     return "Ok", 200
 
-@app.route('/question', methods=['POST'])
+@app.route('/questions', methods=['POST'])
 def AddQuestion():
     payload = request.get_json()
+    question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
     q_db = db.QuizDatabase()
-    q_db.add_question(payload['question'])
-    return "Ok", 200
+    question_id = q_db.add_question(question.to_dict())
+    return {"questionId": question_id}, 200
 
 if __name__ == "__main__":
     app.run()
