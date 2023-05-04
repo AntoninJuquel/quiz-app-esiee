@@ -25,7 +25,7 @@ class QuizDatabase:
             CREATE TABLE IF NOT EXISTS possible_answers (
                 id INTEGER PRIMARY KEY,
                 text TEXT NOT NULL,
-                is_correct INTEGER NOT NULL,
+                isCorrect INTEGER NOT NULL,
                 question_id INTEGER NOT NULL,
                 FOREIGN KEY (question_id) REFERENCES questions (id)
             );
@@ -37,7 +37,7 @@ class QuizDatabase:
             os.remove(self.db_path)
         except:
             raise Exception("Could not remove database file")
-        self.__init__(self.db_path)
+        self.__init__()
 
     def get_all_questions(self):
         cursor = self.db_connection.cursor()
@@ -45,7 +45,7 @@ class QuizDatabase:
         questions = []
         for row in cursor.fetchall():
             question = self.__build_question(row)
-            question['possible_answers'] = self.__get_possible_answers(question['id'])
+            question['possibleAnswers'] = self.__get_possible_answers(question['id'])
             questions.append(question)
         return questions
 
@@ -54,8 +54,8 @@ class QuizDatabase:
         cursor.execute("INSERT INTO questions (text, title, image, position) VALUES (?, ?, ?, ?)", (
             question['text'], question['title'], question['image'], question['position']))
         question_id = cursor.lastrowid
-        for answer in question['possible_answers']:
-            cursor.execute("INSERT INTO possible_answers (text, is_correct, question_id) VALUES (?, ?, ?)", (
+        for answer in question['possibleAnswers']:
+            cursor.execute("INSERT INTO possible_answers (text, isCorrect, question_id) VALUES (?, ?, ?)", (
                 answer['text'], answer['isCorrect'], question_id))
         self.db_connection.commit()
         return question_id
@@ -65,8 +65,8 @@ class QuizDatabase:
         cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=? WHERE id=?", (
             question['text'], question['title'], question['image'], question['position'], question['id']))
         cursor.execute("DELETE FROM possible_answers WHERE question_id=?", (question['id'],))
-        for answer in question['possible_answers']:
-            cursor.execute("INSERT INTO possible_answers (text, is_correct, question_id) VALUES (?, ?, ?)", (
+        for answer in question['possibleAnswers']:
+            cursor.execute("INSERT INTO possible_answers (text, isCorrect, question_id) VALUES (?, ?, ?)", (
                 answer['text'], answer['isCorrect'], question['id']))
         self.db_connection.commit()
 
@@ -74,6 +74,12 @@ class QuizDatabase:
         cursor = self.db_connection.cursor()
         cursor.execute("DELETE FROM questions WHERE id=?", (question_id,))
         cursor.execute("DELETE FROM possible_answers WHERE question_id=?", (question_id,))
+        self.db_connection.commit()
+    
+    def remove_all_questions(self):
+        cursor = self.db_connection.cursor()
+        cursor.execute("DELETE FROM questions")
+        cursor.execute("DELETE FROM possible_answers")
         self.db_connection.commit()
 
     def get_question(self, question_id):
@@ -83,7 +89,17 @@ class QuizDatabase:
         if question_row is None:
             return None
         question = self.__build_question(question_row)
-        question['possible_answers'] = self.__get_possible_answers(question_id)
+        question['possibleAnswers'] = self.__get_possible_answers(question_id)
+        return question
+    
+    def get_question_by_position(self, position):
+        cursor = self.db_connection.cursor()
+        cursor.execute("SELECT * FROM questions WHERE position=?", (position,))
+        question_row = cursor.fetchone()
+        if question_row is None:
+            return None
+        question = self.__build_question(question_row)
+        question['possibleAnswers'] = self.__get_possible_answers(question['id'])
         return question
 
     def __build_question(self, question_row):
@@ -105,7 +121,7 @@ class QuizDatabase:
             answer = {
                 'id': row[0],
                 'text': row[1],
-                'is_correct': bool(row[2]),
+                'isCorrect': bool(row[2]),
                 'question_id': row[3]
             }
             answers.append(answer)

@@ -17,18 +17,18 @@ class Question:
             'title': self.title,
             'image': self.image,
             'position': self.position,
-            'possible_answers': self.possible_answers
+            'possibleAnswers': self.possible_answers
         }
 
 class PossibleAnswer:
-    def __init__(self, id, text, is_correct):
+    def __init__(self, id, text, isCorrect):
         self.id = id
         self.text = text
-        self.is_correct = is_correct
+        self.isCorrect = isCorrect
 
     def to_dict(self):
         return {
             'id': self.id,
             'text': self.text,
-            'is_correct': self.is_correct
+            'isCorrect': self.isCorrect
         }
