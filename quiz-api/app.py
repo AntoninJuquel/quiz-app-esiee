@@ -4,8 +4,10 @@ from models import Question
 import jwt_utils
 import db
 import json
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def check_auth_header(auth_header):
     if auth_header is None:
@@ -52,14 +54,12 @@ def GetQuestion(question_id):
     question = q_db.get_question(question_id)
     if question is None:
         return {"error":"Not found"}, 404
-    print("dumps : ", json.dumps(question))
     return json.dumps(question), 200
 
 @app.route('/questions/<int:question_id>', methods=['PUT'])
 def UpdateQuestion(question_id):
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
-    # if question does not exist, return 404
     payload = request.get_json()
     question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
     q_db = db.QuizDatabase()
@@ -73,6 +73,11 @@ def UpdateQuestion(question_id):
 def GetQuestionByPosition():
     position = request.args.get('position')
     q_db = db.QuizDatabase()
+
+    questions = q_db.get_all_questions()
+    for q in questions:
+        print("title : ", q['title'], "position : ", q['position'])
+    
     question = q_db.get_question_by_position(position)
     if question is None:
         return {"error":"Not found"}, 404
@@ -89,7 +94,7 @@ def RemoveQuestion(question_id):
     if question_exists is None:
         return {"error":"Not found"}, 404
     q_db.remove_question(question_id)
-    return "Ok", 200
+    return "Ok", 204
 
 
 @app.route('/questions/all', methods=['DELETE'])

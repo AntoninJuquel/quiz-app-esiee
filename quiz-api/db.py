@@ -41,7 +41,7 @@ class QuizDatabase:
 
     def get_all_questions(self):
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT * FROM questions")
+        cursor.execute("SELECT * FROM questions ORDER BY position ASC")
         questions = []
         for row in cursor.fetchall():
             question = self.__build_question(row)
@@ -51,6 +51,13 @@ class QuizDatabase:
 
     def add_question(self, question):
         cursor = self.db_connection.cursor()
+
+        cursor.execute("SELECT id FROM questions WHERE position=?", (question['position'],))
+        row = cursor.fetchone()
+        if row is not None:
+            question_id = row[0]
+            self.shift_position_up(question_id)
+
         cursor.execute("INSERT INTO questions (text, title, image, position) VALUES (?, ?, ?, ?)", (
             question['text'], question['title'], question['image'], question['position']))
         question_id = cursor.lastrowid
@@ -60,8 +67,64 @@ class QuizDatabase:
         self.db_connection.commit()
         return question_id
 
+    def shift_position_down(self, question_id):
+        cursor = self.db_connection.cursor()
+        cursor.execute("SELECT position FROM questions WHERE id=?", (question_id,))
+        row = cursor.fetchone()
+        position = row[0]
+        next_question_id = None
+        cursor.execute("SELECT id FROM questions WHERE position=?", (position + 1,))
+        row = cursor.fetchone()
+        if row is not None:
+            next_question_id = row[0]
+        cursor.execute("UPDATE questions SET position=? WHERE id=?", (position - 1, question_id))
+        self.db_connection.commit()
+        if next_question_id is not None:
+            self.shift_position_down(next_question_id)
+
+    def shift_position_up(self, question_id):
+        cursor = self.db_connection.cursor()
+        cursor.execute("SELECT position FROM questions WHERE id=?", (question_id,))
+        row = cursor.fetchone()
+        position = row[0]
+        next_question_id = None
+        cursor.execute("SELECT id FROM questions WHERE position=?", (position + 1,))
+        row = cursor.fetchone()
+        if row is not None:
+            next_question_id = row[0]
+        cursor.execute("UPDATE questions SET position=? WHERE id=?", (position + 1, question_id))
+        self.db_connection.commit()
+        if next_question_id is not None:
+            self.shift_position_up(next_question_id)
+
     def update_question(self, question):
         cursor = self.db_connection.cursor()
+
+        question_id = question['id']
+        new_pos = question['position']
+        old_pos = None
+        cursor.execute("SELECT position FROM questions WHERE id=?", (question['id'],))
+        row = cursor.fetchone()
+        if row is not None:
+            old_pos = row[0]
+
+        questions = self.get_all_questions()
+        q_arr = []
+        for q in questions:
+            q_arr.append({q["id"]: q["position"]})
+
+        my_q = q_arr.pop(old_pos - 1)
+        q_arr.insert(new_pos - 1, my_q)
+        
+        def update_pos(q_id, pos):
+            cursor.execute("UPDATE questions SET position=? WHERE id=?", (pos, q_id))
+            self.db_connection.commit()
+
+        for i, q in enumerate(q_arr):
+            q_id = list(q.keys())[0]
+            pos = i + 1
+            update_pos(q_id, pos)
+
         cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=? WHERE id=?", (
             question['text'], question['title'], question['image'], question['position'], question['id']))
         cursor.execute("DELETE FROM possible_answers WHERE question_id=?", (question['id'],))
@@ -72,9 +135,22 @@ class QuizDatabase:
 
     def remove_question(self, question_id):
         cursor = self.db_connection.cursor()
+        position = None
+        cursor.execute("SELECT position FROM questions WHERE id=?", (question_id,))
+        row = cursor.fetchone()
+        if row is not None:
+            position = row[0]
+        if position is not None:
+            next_question_id = None
+            cursor.execute("SELECT id FROM questions WHERE position=?", (position + 1,))
+            row = cursor.fetchone()
+            if row is not None:
+                next_question_id = row[0]
         cursor.execute("DELETE FROM questions WHERE id=?", (question_id,))
         cursor.execute("DELETE FROM possible_answers WHERE question_id=?", (question_id,))
         self.db_connection.commit()
+        if next_question_id is not None:
+            self.shift_position_down(next_question_id)
     
     def remove_all_questions(self):
         cursor = self.db_connection.cursor()
