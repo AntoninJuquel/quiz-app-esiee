@@ -30,6 +30,13 @@ class QuizDatabase:
                 FOREIGN KEY (question_id) REFERENCES questions (id)
             );
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS participations (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                score INTEGER NOT NULL
+            );
+        ''')
         self.db_connection.commit()
 
     def rebuild_db(self):
@@ -203,4 +210,26 @@ class QuizDatabase:
             answers.append(answer)
         return answers
 
+    def get_all_participations(self):
+        cursor = self.db_connection.cursor()
+        cursor.execute("SELECT * FROM participations ORDER BY score DESC")
+        rows = cursor.fetchall()
+        participations = []
+        for row in rows:
+            participation = {
+                'playerName': row[1],
+                'score': row[2]
+            }
+            participations.append(participation)
+        return participations
 
+    def add_score(self, player_name, score):
+        cursor = self.db_connection.cursor()
+        cursor.execute("INSERT INTO participations (name, score) VALUES (?, ?)", (player_name, score))
+        self.db_connection.commit()
+
+
+    def remove_all_participations(self):
+        cursor = self.db_connection.cursor()
+        cursor.execute("DELETE FROM participations")
+        self.db_connection.commit()

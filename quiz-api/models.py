@@ -32,3 +32,16 @@ class PossibleAnswer:
             'text': self.text,
             'isCorrect': self.isCorrect
         }
+
+class Participation:
+    def __init__(self,id,name,points):
+        self.id = id
+        self.name = name
+        self.points = points
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'points': self.points
+        }

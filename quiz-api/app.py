@@ -22,7 +22,10 @@ def hello_world():
 
 @app.route('/quiz-info', methods=['GET'])
 def GetQuizInfo():
-	return {"size": 0, "scores": []}, 200
+    q_db = db.QuizDatabase()
+    questions = q_db.get_all_questions()
+    score = q_db.get_all_participations()
+    return {"size": len(questions), "scores": score}, 200
 
 @app.route('/login', methods=['POST'])
 def Login():
@@ -109,7 +112,25 @@ def RemoveAllQuestions():
 def RemoveAllParticipations():
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
+    q_db = db.QuizDatabase()
+    q_db.remove_all_participations()
     return "Ok", 204
+
+@app.route('/participations', methods=['POST'])
+def AddParticipation():
+    payload = request.get_json()
+    q_db = db.QuizDatabase()
+    if len(payload['answers']) != 10:
+        return {"error":"Bad request"}, 400
+    
+    score = 0
+    answsers = payload['answers']
+    questions = q_db.get_all_questions()
+    for i in range(len(questions)):
+        if questions[i]['possibleAnswers'][answsers[i] - 1]['isCorrect']:
+            score += 1
+    participation_id = q_db.add_score(payload['playerName'], score)
+    return {"playerName": payload['playerName'], "score":score}, 200
 
 if __name__ == "__main__":
     app.run()
