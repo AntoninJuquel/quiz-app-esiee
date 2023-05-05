@@ -13,15 +13,13 @@ export default {
       currentQuestion: {} as Question,
       timeRemaining: 0,
       interval: null as number | null,
-      difficulty: Difficulty.EASY
+      difficulty: Difficulty.EASY,
+      step: 1
     }
   },
   computed: {
     currentQuestionPosition() {
       return this.remainingQuestions[0]
-    },
-    currentQuestionNumber() {
-      return this.totalNumberOfQuestions - this.remainingQuestions.length + 1
     },
     formatCountdown() {
       const date = new Date(0)
@@ -33,7 +31,7 @@ export default {
     await quizApiService.getQuizInfo().then((response) => {
       this.totalNumberOfQuestions = response.data.size
       for (let i = 0; i < this.totalNumberOfQuestions; i++) {
-        this.remainingQuestions.push(i)
+        this.remainingQuestions.push(i + 1)
         this.answers.push([-1] as Answer)
       }
       this.remainingQuestions.sort(() => Math.random() - 0.5)
@@ -81,13 +79,17 @@ export default {
         .getQuestion(this.currentQuestionPosition)
         .then((response) => {
           this.currentQuestion = response.data
+          this.step = Math.min(
+            this.totalNumberOfQuestions - this.remainingQuestions.length + 1,
+            this.totalNumberOfQuestions
+          )
         })
         .catch((error) => {
           console.log(error)
         })
     },
     answerQuestion(answer: Answer) {
-      this.answers[this.currentQuestionPosition] = answer
+      this.answers[this.currentQuestionPosition - 1] = answer
       this.remainingQuestions.shift()
       if (this.remainingQuestions.length > 0) {
         if (this.difficulty === Difficulty.HARD) {
@@ -120,7 +122,7 @@ export default {
 </script>
 
 <template>
-  <h3 class="text-h3 text-center">{{ currentQuestionNumber }} / {{ totalNumberOfQuestions }}</h3>
+  <h3 class="text-h3 text-center">{{ step }} / {{ totalNumberOfQuestions }}</h3>
   <h3 v-if="interval" class="text-h3 text-center">{{ formatCountdown }}</h3>
   <QuestionDisplay :question="currentQuestion" @answer-question="answerQuestion" />
 </template>

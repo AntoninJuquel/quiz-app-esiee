@@ -5,7 +5,8 @@ export default {
     return {
       editedQuestion: {} as Question,
       newAnswer: '',
-      selected: [] as number[]
+      selected: [] as number[],
+      loading: false
     }
   },
   props: {
@@ -27,24 +28,37 @@ export default {
     question: {
       handler: function (newQuestion: Question) {
         this.editedQuestion = { ...newQuestion }
+        this.selected = this.editedQuestion.possibleAnswers
+          .map((answer) => {
+            return answer.isCorrect ? answer.id : -1
+          })
+          .filter((index) => index !== -1)
+        this.loading = false
       },
       immediate: true
     }
   },
   methods: {
     saveQuestion() {
-      this.editedQuestion.possibleAnswers = this.editedQuestion.possibleAnswers.map(
-        (answer, index) => {
-          return {
-            text: answer.text,
-            isCorrect: this.selected.includes(index)
-          }
+      this.loading = true
+      this.editedQuestion.possibleAnswers = this.editedQuestion.possibleAnswers.map((answer) => {
+        return {
+          ...answer,
+          isCorrect: this.selected.includes(answer.id)
         }
-      )
-      this.$emit('save-question', this.editedQuestion)
+      })
+      this.$emit('save-question', {
+        ...this.editedQuestion,
+        position: parseInt(this.editedQuestion.position.toString())
+      })
     },
     addAnswer() {
-      this.editedQuestion.possibleAnswers.push({ text: this.newAnswer })
+      this.editedQuestion.possibleAnswers.push({
+        id: this.editedQuestion.possibleAnswers.length,
+        isCorrect: false,
+        text: this.newAnswer,
+        question_id: this.editedQuestion.id
+      })
       this.newAnswer = ''
     },
     removeAnswer(index: number) {
@@ -129,7 +143,7 @@ export default {
         v-for="(answer, index) in editedQuestion.possibleAnswers"
         :key="index"
       >
-        <v-checkbox-btn v-model="selected" :value="index"></v-checkbox-btn>
+        <v-checkbox-btn v-model="selected" :value="answer.id"></v-checkbox-btn>
         <v-text-field
           v-model="answer.text"
           variant="underlined"
@@ -146,7 +160,7 @@ export default {
           v-for="(answer, index) in editedQuestion.possibleAnswers"
           :key="index"
         >
-          <v-radio :value="[index]" class="flex-grow-0"></v-radio>
+          <v-radio :value="[answer.id]" class="flex-grow-0"></v-radio>
           <v-text-field
             v-model="answer.text"
             variant="underlined"
@@ -158,7 +172,7 @@ export default {
     </v-card-text>
 
     <v-card-actions>
-      <v-btn color="primary" @click="saveQuestion">Sauvegarder</v-btn>
+      <v-btn color="primary" @click="saveQuestion" :loading="loading">Sauvegarder</v-btn>
     </v-card-actions>
   </v-card>
 </template>

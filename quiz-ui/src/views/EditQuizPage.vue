@@ -3,35 +3,34 @@ import quizApiService from '@/services/QuizApiService'
 import EditQuestionDisplay from '@/components/EditQuestionDisplay.vue'
 import type { Question } from '@/types/quiz'
 export default {
-  async created() {
-    await quizApiService
-      .getQuizInfo()
-      .then((response) => {
-        this.totalNumberOfQuestions = response.data.size
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-
-    this.getQuestionByPosition()
-  },
   data() {
     return {
-      currentQuestionPosition: 0,
       totalNumberOfQuestions: 0,
+      currentQuestionPosition: 1,
       currentQuestion: {} as Question,
       creation: false,
       dialog: false,
-      dialogActionsEnabled: false
+      dialogActionsEnabled: false,
+      dialogAction: () => {}
     }
   },
   methods: {
+    async getQuizInfo() {
+      await quizApiService
+        .getQuizInfo()
+        .then((response) => {
+          this.totalNumberOfQuestions = response.data.size
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
     async getQuestionByPosition() {
       await quizApiService
         .getQuestion(this.currentQuestionPosition)
         .then((response) => {
           if (response.data === null) {
-            this.createQuestion()
+            this.startCreateQuestion()
             return
           }
           this.currentQuestion = response.data
@@ -39,16 +38,17 @@ export default {
         })
         .catch((error) => {
           console.log(error)
-          this.createQuestion()
+          this.startCreateQuestion()
         })
     },
     saveQuestion(question: Question) {
-      console.log(question)
       if (this.creation) {
         quizApiService
           .createQuestion(question)
           .then((response) => {
-            this.currentQuestion = response.data
+            this.totalNumberOfQuestions++
+            this.currentQuestion = { ...question, id: response.data.id }
+            this.currentQuestionPosition = question.position
             this.creation = false
           })
           .catch((error) => {
@@ -57,21 +57,23 @@ export default {
       } else {
         quizApiService
           .updateQuestion(question)
-          .then((response) => {
-            this.currentQuestion = response.data
+          .then(() => {
+            this.currentQuestion = question
           })
           .catch((error) => {
             console.log(error)
           })
       }
     },
-    createQuestion() {
+    startCreateQuestion() {
       this.creation = true
+      this.currentQuestionPosition = this.totalNumberOfQuestions + 1
       this.currentQuestion = {
-        id: this.totalNumberOfQuestions.toString(),
-        position: this.totalNumberOfQuestions,
+        id: this.totalNumberOfQuestions,
+        position: this.currentQuestionPosition,
         title: '',
         text: '',
+        image: '',
         possibleAnswers: [],
         multipleAnswers: false
       }
@@ -80,7 +82,12 @@ export default {
       quizApiService
         .deleteQuestion(question)
         .then(() => {
-          this.currentQuestionPosition--
+          this.totalNumberOfQuestions--
+          if (this.totalNumberOfQuestions === 0) {
+            this.startCreateQuestion()
+            return
+          }
+          this.currentQuestionPosition = Math.max(1, this.currentQuestionPosition - 1)
           this.getQuestionByPosition()
         })
         .catch((error) => {
@@ -89,12 +96,12 @@ export default {
     },
     async deleteAllQuestions() {
       this.dialogActionsEnabled = false
-
       await quizApiService
         .deleteAllQuestions()
         .then(() => {
-          this.currentQuestionPosition = 0
-          this.getQuestionByPosition()
+          this.totalNumberOfQuestions = 0
+          this.currentQuestionPosition = 1
+          this.startCreateQuestion()
         })
         .catch((error) => {
           console.log(error)
@@ -104,16 +111,22 @@ export default {
     },
     async deleteAllScores() {
       this.dialogActionsEnabled = false
-
       await quizApiService
         .deleteAllParticipations()
         .then(() => {})
         .catch((error) => {
           console.log(error)
         })
-
       this.dialog = false
     }
+  },
+  async created() {
+    await this.getQuizInfo()
+    if (this.totalNumberOfQuestions === 0) {
+      this.startCreateQuestion()
+      return
+    }
+    this.getQuestionByPosition()
   },
   components: {
     EditQuestionDisplay
@@ -135,18 +148,18 @@ export default {
     :length="totalNumberOfQuestions"
   ></v-pagination>
   <v-sheet class="d-flex flex-column align-center">
-    <v-btn v-if="!creation" @click="createQuestion">Créer une question</v-btn>
+    <v-btn v-if="!creation" @click="startCreateQuestion">Créer une question</v-btn>
     <v-btn
       class="mt-4"
       prepend-icon="mdi-delete-forever"
-      @click="dialog = dialogActionsEnabled = true"
+      @click=";(dialogAction = deleteAllQuestions), (dialog = dialogActionsEnabled = true)"
       color="error"
       >Supprimer les questions</v-btn
     >
     <v-btn
       class="mt-4"
       prepend-icon="mdi-delete-forever"
-      @click="dialog = dialogActionsEnabled = true"
+      @click=";(dialogAction = deleteAllScores), (dialog = dialogActionsEnabled = true)"
       color="error"
       >Supprimer les scores</v-btn
     >
@@ -160,11 +173,7 @@ export default {
         <v-btn color="blue darken-1" text @click="dialog = false" :disabled="!dialogActionsEnabled"
           >Annuler</v-btn
         >
-        <v-btn
-          color="blue darken-1"
-          text
-          @click="deleteAllQuestions"
-          :disabled="!dialogActionsEnabled"
+        <v-btn color="blue darken-1" text @click="dialogAction" :disabled="!dialogActionsEnabled"
           >Confirmer</v-btn
         >
       </v-card-actions>

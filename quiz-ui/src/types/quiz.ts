@@ -10,12 +10,14 @@ export type QuizInfo = {
 }
 
 export type PossibleAnswer = {
+  id: number
   text: string
-  isCorrect?: boolean
+  isCorrect: boolean
+  question_id: number
 }
 
 export type Question = {
-  id: string
+  id: number
   position: number
   title: string
   text: string

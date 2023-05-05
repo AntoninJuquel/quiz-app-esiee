@@ -120,12 +120,12 @@ def RemoveAllParticipations():
 def AddParticipation():
     payload = request.get_json()
     q_db = db.QuizDatabase()
-    if len(payload['answers']) != 10:
+    questions = q_db.get_all_questions()
+    if len(payload['answers']) != len(questions):
         return {"error":"Bad request"}, 400
     
     score = 0
     answsers = payload['answers']
-    questions = q_db.get_all_questions()
     for i in range(len(questions)):
         if questions[i]['possibleAnswers'][answsers[i] - 1]['isCorrect']:
             score += 1

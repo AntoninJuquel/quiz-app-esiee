@@ -3,7 +3,8 @@ import type { Question } from '@/types/quiz'
 export default {
   data() {
     return {
-      selected: []
+      selected: [],
+      loading: false
     }
   },
   props: {
@@ -15,8 +16,14 @@ export default {
   emits: ['answer-question'],
   methods: {
     answerQuestion() {
+      this.loading = true
       this.$emit('answer-question', this.selected)
+    }
+  },
+  watch: {
+    question() {
       this.selected = []
+      this.loading = false
     }
   }
 }
@@ -33,25 +40,25 @@ export default {
     <v-card-actions class="d-flex flex-column align-start" v-if="question.multipleAnswers">
       <v-checkbox-btn
         v-for="(answer, index) in question.possibleAnswers"
-        :key="answer.text"
+        :key="answer.id"
         v-model="selected"
         :label="answer.text"
-        :value="index"
+        :value="index + 1"
       ></v-checkbox-btn>
     </v-card-actions>
     <v-card-actions v-else>
       <v-radio-group v-model="selected" row>
         <v-radio
           v-for="(answer, index) in question.possibleAnswers"
-          :key="answer.text"
+          :key="answer.id"
           :label="answer.text"
-          :value="[index]"
+          :value="[index + 1]"
         ></v-radio>
       </v-radio-group>
     </v-card-actions>
 
     <v-card-actions>
-      <v-btn color="primary" @click="answerQuestion">Répondre</v-btn>
+      <v-btn color="primary" @click="answerQuestion" :loading="loading">Répondre</v-btn>
     </v-card-actions>
   </v-card>
 </template>

@@ -4,6 +4,7 @@ import type { SubmitEventPromise } from 'vuetify/lib/framework.mjs'
 export default {
   data() {
     return {
+      loading: false,
       password: '',
       rules: [(v: string) => !!v || 'Veillez entrer un mot de passe'],
       dialog: false
@@ -13,6 +14,7 @@ export default {
     async login(event: SubmitEventPromise) {
       const results = await event
       if (!results.valid) return
+      this.loading = true
       await quizApiService
         .login(this.password)
         .then(() => {
@@ -22,6 +24,9 @@ export default {
           console.log(error)
           this.dialog = true
           this.password = ''
+        })
+        .finally(() => {
+          this.loading = false
         })
     }
   }
@@ -37,7 +42,7 @@ export default {
         label="Mot de passe"
         type="password"
       ></v-text-field>
-      <v-btn type="submit" block class="mt-2">Entrer !</v-btn>
+      <v-btn type="submit" block class="mt-2" :loading="loading">Entrer !</v-btn>
     </v-form>
   </v-sheet>
   <v-dialog v-model="dialog" width="auto" transition="dialog-top-transition">
