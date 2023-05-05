@@ -14,7 +14,6 @@ export default {
     method: string,
     resource: string,
     data?: Record<string, unknown>,
-    params?: Record<string, unknown>,
     token?: string
   ): Promise<{ status: number; data: T }> {
     const headers = new AxiosHeaders({
@@ -29,8 +28,7 @@ export default {
       method,
       headers,
       url: resource,
-      data,
-      params
+      data
     })
       .then((response) => {
         return { status: response.status, data: response.data }
@@ -45,9 +43,7 @@ export default {
     return this.call<QuizInfo>('get', 'quiz-info')
   },
   getQuestion(position: number) {
-    return this.call<Question>('get', 'questions', undefined, {
-      position
-    })
+    return this.call<Question>('get', `questions?position=${position}`)
   },
   postAnswers(playerName: string, answers: Answer[]) {
     let computedAnswers: Answer[] | number[] = answers
@@ -64,10 +60,10 @@ export default {
     return this.call<Question>('post', 'questions', question)
   },
   updateQuestion(question: Question) {
-    return this.call<Question>('put', `questions/${question.position}`, question)
+    return this.call<Question>('put', `questions/${question.id}`, question)
   },
-  deleteQuestion(position: number) {
-    return this.call<Question>('delete', `questions/${position}`)
+  deleteQuestion(question: Question) {
+    return this.call<Question>('delete', `questions/${question.id}`)
   },
   deleteAllQuestions() {
     return this.call<Question>('delete', `questions/all`)

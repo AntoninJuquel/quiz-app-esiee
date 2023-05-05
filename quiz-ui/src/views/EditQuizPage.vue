@@ -78,7 +78,7 @@ export default {
     },
     deleteQuestion(question: Question) {
       quizApiService
-        .deleteQuestion(question.position)
+        .deleteQuestion(question)
         .then(() => {
           this.currentQuestionPosition--
           this.getQuestionByPosition()
