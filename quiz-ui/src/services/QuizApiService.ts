@@ -56,8 +56,9 @@ export default {
     }
     return this.call<Score>('post', 'participations', { playerName, answers: computedAnswers })
   },
-  login(password: string) {
-    return this.call<Token>('post', 'login', { password })
+  async login(password: string) {
+    const { data } = await this.call<Token>('post', 'login', { password })
+    instance.defaults.headers.common.Authorization = `Bearer ${data.token}`
   },
   createQuestion(question: Question) {
     return this.call<Question>('post', 'questions', question)
