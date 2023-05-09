@@ -47,7 +47,10 @@ def AddQuestion():
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
     payload = request.get_json()
-    question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
+    if "date" in payload:
+        question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'], payload['date'])
+    else:
+        question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
     q_db = db.QuizDatabase()
     question_id = q_db.add_question(question.to_dict())
     return {"id": question_id}, 200
@@ -65,7 +68,10 @@ def UpdateQuestion(question_id):
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
     payload = request.get_json()
-    question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
+    if "date" in payload:
+        question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'], payload['date'])
+    else:
+        question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
     q_db = db.QuizDatabase()
     question_exists = q_db.get_question(question_id)
     if question_exists is None:
