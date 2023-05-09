@@ -18,7 +18,8 @@ class QuizDatabase:
                 text TEXT NOT NULL,
                 title TEXT NOT NULL,
                 image TEXT NOT NULL,
-                position INTEGER NOT NULL
+                position INTEGER NOT NULL,
+                date DATE DEFAULT (strftime('%Y-%m-%d','now'))
             );
         ''')
         cursor.execute('''
@@ -47,9 +48,12 @@ class QuizDatabase:
             raise Exception("Could not remove database file")
         self.__init__()
 
-    def get_all_questions(self):
+    def get_all_questions(self,date=None):
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT * FROM questions ORDER BY position ASC")
+        if date:
+            cursor.execute("SELECT * FROM questions WHERE date=? ORDER BY position ASC", (date,))
+        else:
+            cursor.execute("SELECT * FROM questions ORDER BY position ASC")
         questions = []
         for row in cursor.fetchall():
             question = self.__build_question(row)
@@ -60,11 +64,13 @@ class QuizDatabase:
     def add_question(self, question):
         cursor = self.db_connection.cursor()
 
+        date = question['date']
+
         cursor.execute("SELECT id FROM questions WHERE position=?", (question['position'],))
         row = cursor.fetchone()
         if row is not None:
             question_id = row[0]
-            self.shift_position_up(question_id)
+            self.shift_position_up(question_id, date)
 
         cursor.execute("INSERT INTO questions (text, title, image, position) VALUES (?, ?, ?, ?)", (
             question['text'], question['title'], question['image'], question['position']))
@@ -75,7 +81,7 @@ class QuizDatabase:
         self.db_connection.commit()
         return question_id
 
-    def shift_position_down(self, question_id):
+    def shift_position_down(self, question_id, date):
         cursor = self.db_connection.cursor()
         cursor.execute("SELECT position FROM questions WHERE id=?", (question_id,))
         row = cursor.fetchone()
@@ -88,9 +94,9 @@ class QuizDatabase:
         cursor.execute("UPDATE questions SET position=? WHERE id=?", (position - 1, question_id))
         self.db_connection.commit()
         if next_question_id is not None:
-            self.shift_position_down(next_question_id)
+            self.shift_position_down(next_question_id, date)
 
-    def shift_position_up(self, question_id):
+    def shift_position_up(self, question_id, date):
         cursor = self.db_connection.cursor()
         cursor.execute("SELECT position FROM questions WHERE id=?", (question_id,))
         row = cursor.fetchone()
@@ -103,12 +109,13 @@ class QuizDatabase:
         cursor.execute("UPDATE questions SET position=? WHERE id=?", (position + 1, question_id))
         self.db_connection.commit()
         if next_question_id is not None:
-            self.shift_position_up(next_question_id)
+            self.shift_position_up(next_question_id, date)
 
     def update_question(self, question):
         cursor = self.db_connection.cursor()
 
         question_id = question['id']
+        date = question['date']
         new_pos = question['position']
         old_pos = None
         cursor.execute("SELECT position FROM questions WHERE id=?", (question['id'],))
@@ -116,7 +123,7 @@ class QuizDatabase:
         if row is not None:
             old_pos = row[0]
 
-        questions = self.get_all_questions()
+        questions = self.get_all_questions(date=date)
         q_arr = []
         for q in questions:
             q_arr.append({q["id"]: q["position"]})
@@ -144,6 +151,11 @@ class QuizDatabase:
     def remove_question(self, question_id):
         cursor = self.db_connection.cursor()
         position = None
+        date = None
+        cursor.execute("SELECT date FROM questions WHERE id=?", (question_id,))
+        row = cursor.fetchone()
+        if row is not None:
+            date = row[0]
         cursor.execute("SELECT position FROM questions WHERE id=?", (question_id,))
         row = cursor.fetchone()
         if row is not None:
@@ -158,7 +170,7 @@ class QuizDatabase:
         cursor.execute("DELETE FROM possible_answers WHERE question_id=?", (question_id,))
         self.db_connection.commit()
         if next_question_id is not None:
-            self.shift_position_down(next_question_id)
+            self.shift_position_down(next_question_id, date)
     
     def remove_all_questions(self):
         cursor = self.db_connection.cursor()
@@ -176,9 +188,12 @@ class QuizDatabase:
         question['possibleAnswers'] = self.__get_possible_answers(question_id)
         return question
     
-    def get_question_by_position(self, position):
+    def get_question_by_position(self, position, date=None):
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT * FROM questions WHERE position=?", (position,))
+        if date is not None:
+            cursor.execute("SELECT * FROM questions WHERE position=? AND date=?", (position, date))
+        else:
+            cursor.execute("SELECT * FROM questions WHERE position=?", (position,))
         question_row = cursor.fetchone()
         if question_row is None:
             return None
@@ -192,7 +207,8 @@ class QuizDatabase:
             'text': question_row[1],
             'title': question_row[2],
             'image': question_row[3],
-            'position': question_row[4]
+            'position': question_row[4],
+            'date' : question_row[5]
         }
         return question
 

@@ -75,13 +75,11 @@ def UpdateQuestion(question_id):
 @app.route('/questions', methods=['GET'])
 def GetQuestionByPosition():
     position = request.args.get('position')
+    date = request.args.get('date')
+
     q_db = db.QuizDatabase()
 
-    questions = q_db.get_all_questions()
-    for q in questions:
-        print("title : ", q['title'], "position : ", q['position'])
-    
-    question = q_db.get_question_by_position(position)
+    question = q_db.get_question_by_position(position,date)
     if question is None:
         return {"error":"Not found"}, 404
     return json.dumps(question), 200
