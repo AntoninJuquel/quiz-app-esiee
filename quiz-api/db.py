@@ -19,7 +19,7 @@ class QuizDatabase:
                 title TEXT NOT NULL,
                 image TEXT NOT NULL,
                 position INTEGER NOT NULL,
-                date DATE DEFAULT (strftime('%Y-%m-%d','now'))
+                date TEXT DEFAULT (strftime('%Y-%m-%d','now'))
             );
         ''')
         cursor.execute('''
@@ -37,7 +37,7 @@ class QuizDatabase:
                 name TEXT NOT NULL,
                 score INTEGER NOT NULL,
                 difficulty INTEGER NOT NULL DEFAULT 1,
-                date DATE DEFAULT (strftime('%Y-%m-%d','now'))
+                date TEXT DEFAULT (strftime('%Y-%m-%d','now'))
             );
         ''')
         self.db_connection.commit()
@@ -73,8 +73,12 @@ class QuizDatabase:
             question_id = row[0]
             self.shift_position_up(question_id, date)
 
-        cursor.execute("INSERT INTO questions (text, title, image, position) VALUES (?, ?, ?, ?)", (
-            question['text'], question['title'], question['image'], question['position']))
+        if "date" in question:
+            cursor.execute("INSERT INTO questions (text, title, image, position, date) VALUES (?, ?, ?, ?, ?)", (
+                question['text'], question['title'], question['image'], question['position'], question['date']))
+        else:
+            cursor.execute("INSERT INTO questions (text, title, image, position) VALUES (?, ?, ?, ?)", (
+                question['text'], question['title'], question['image'], question['position']))
         question_id = cursor.lastrowid
         for answer in question['possibleAnswers']:
             cursor.execute("INSERT INTO possible_answers (text, isCorrect, question_id) VALUES (?, ?, ?)", (
