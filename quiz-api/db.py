@@ -34,7 +34,8 @@ class QuizDatabase:
             CREATE TABLE IF NOT EXISTS participations (
                 id INTEGER PRIMARY KEY,
                 name TEXT NOT NULL,
-                score INTEGER NOT NULL
+                score INTEGER NOT NULL,
+                difficulty INTEGER NOT NULL DEFAULT 1
             );
         ''')
         self.db_connection.commit()
@@ -218,14 +219,15 @@ class QuizDatabase:
         for row in rows:
             participation = {
                 'playerName': row[1],
-                'score': row[2]
+                'score': row[2],
+                'difficulty': row[3],
             }
             participations.append(participation)
         return participations
 
-    def add_score(self, player_name, score):
+    def add_score(self, player_name, score, difficulty):
         cursor = self.db_connection.cursor()
-        cursor.execute("INSERT INTO participations (name, score) VALUES (?, ?)", (player_name, score))
+        cursor.execute("INSERT INTO participations (name, score, difficulty) VALUES (?, ?, ?)", (player_name, score, difficulty))
         self.db_connection.commit()
 
 

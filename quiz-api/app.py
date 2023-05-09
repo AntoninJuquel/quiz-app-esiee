@@ -121,6 +121,9 @@ def AddParticipation():
     payload = request.get_json()
     q_db = db.QuizDatabase()
     questions = q_db.get_all_questions()
+    difficulty_factor = 1
+    if "difficulty" in payload:
+        difficulty_factor = payload['difficulty']
     if len(payload['answers']) != len(questions):
         return {"error":"Bad request"}, 400
     
@@ -131,7 +134,8 @@ def AddParticipation():
             continue
         if questions[i]['possibleAnswers'][answsers[i] - 1]['isCorrect']:
             score += 1
-    participation_id = q_db.add_score(payload['playerName'], score)
+    score *= difficulty_factor
+    participation_id = q_db.add_score(payload['playerName'], score, difficulty_factor)
     return {"playerName": payload['playerName'], "score":score}, 200
 
 if __name__ == "__main__":
