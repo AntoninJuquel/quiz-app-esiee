@@ -127,6 +127,8 @@ def AddParticipation():
     score = 0
     answsers = payload['answers']
     for i in range(len(questions)):
+        if answsers[i] < 1:
+            continue
         if questions[i]['possibleAnswers'][answsers[i] - 1]['isCorrect']:
             score += 1
     participation_id = q_db.add_score(payload['playerName'], score)
