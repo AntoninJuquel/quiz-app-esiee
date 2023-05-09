@@ -36,7 +36,8 @@ class QuizDatabase:
                 id INTEGER PRIMARY KEY,
                 name TEXT NOT NULL,
                 score INTEGER NOT NULL,
-                difficulty INTEGER NOT NULL DEFAULT 1
+                difficulty INTEGER NOT NULL DEFAULT 1,
+                date DATE DEFAULT (strftime('%Y-%m-%d','now'))
             );
         ''')
         self.db_connection.commit()
@@ -227,9 +228,12 @@ class QuizDatabase:
             answers.append(answer)
         return answers
 
-    def get_all_participations(self):
+    def get_all_participations(self, date=None):
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT * FROM participations ORDER BY score DESC")
+        if date:
+            cursor.execute("SELECT * FROM participations WHERE date=? ORDER BY score DESC", (date,))
+        else:
+            cursor.execute("SELECT * FROM participations ORDER BY score DESC")
         rows = cursor.fetchall()
         participations = []
         for row in rows:
@@ -237,6 +241,7 @@ class QuizDatabase:
                 'playerName': row[1],
                 'score': row[2],
                 'difficulty': row[3],
+                'date' : row[4]
             }
             participations.append(participation)
         return participations

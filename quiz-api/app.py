@@ -23,8 +23,9 @@ def hello_world():
 @app.route('/quiz-info', methods=['GET'])
 def GetQuizInfo():
     q_db = db.QuizDatabase()
-    questions = q_db.get_all_questions()
-    score = q_db.get_all_participations()
+    date = request.args.get('date')
+    questions = q_db.get_all_questions(date)
+    score = q_db.get_all_participations(date)
     return {"size": len(questions), "scores": score}, 200
 
 @app.route('/login', methods=['POST'])
