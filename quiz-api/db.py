@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 import os
 
 class QuizDatabase:
@@ -66,8 +67,10 @@ class QuizDatabase:
         cursor = self.db_connection.cursor()
 
         date = question['date']
-
-        cursor.execute("SELECT id FROM questions WHERE position=?", (question['position'],))
+        if date:
+            cursor.execute("SELECT id FROM questions WHERE position=? AND date=?", (question['position'], date))
+        else:
+            cursor.execute("SELECT id FROM questions WHERE position=?", (question['position'],))
         row = cursor.fetchone()
         if row is not None:
             question_id = row[0]
