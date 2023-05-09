@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosHeaders } from 'axios'
-import type { Question, QuizInfo, Answer, Token } from '@/types/quiz'
+import { format } from 'date-fns'
+import type { Question, QuizInfo, Answer, Token, Difficulty } from '@/types/quiz'
 import type { Score } from '@/types/quiz'
 
 const MULTIPLE_ANSWERS_ENABLED = false
@@ -39,36 +40,39 @@ export default {
         throw error
       })
   },
-  getQuizInfo() {
-    return this.call<QuizInfo>('get', 'quiz-info')
+  async getQuizInfo(date: string = format(new Date(), 'yyyy-MM-dd')) {
+    return this.call<QuizInfo>('get', `quiz-info?date=${date}`)
   },
-  getQuestion(position: number) {
-    return this.call<Question>('get', `questions?position=${position}`)
+  async getQuestion(position: number, date: string = format(new Date(), 'yyyy-MM-dd')) {
+    return this.call<Question>('get', `questions?position=${position}&date=${date}`)
   },
-  postAnswers(playerName: string, answers: Answer[]) {
+  async postAnswers(playerName: string, answers: Answer[], difficulty: Difficulty) {
     let computedAnswers: Answer[] | number[] = answers
     if (!MULTIPLE_ANSWERS_ENABLED) {
       computedAnswers = answers.flat()
     }
-    return this.call<Score>('post', 'participations', { playerName, answers: computedAnswers })
+    return this.call<Score>('post', 'participations', { playerName, answers: computedAnswers, difficulty })
   },
   async login(password: string) {
     const { data } = await this.call<Token>('post', 'login', { password })
     instance.defaults.headers.common.Authorization = `Bearer ${data.token}`
   },
-  createQuestion(question: Question) {
+  async createQuestion(question: Question) {
     return this.call<Question>('post', 'questions', question)
   },
-  updateQuestion(question: Question) {
+  async updateQuestion(question: Question) {
     return this.call<Question>('put', `questions/${question.id}`, question)
   },
-  deleteQuestion(question: Question) {
+  async deleteQuestion(question: Question) {
     return this.call<Question>('delete', `questions/${question.id}`)
   },
-  deleteAllQuestions() {
+  async deleteAllQuestions() {
     return this.call<Question>('delete', `questions/all`)
   },
-  deleteAllParticipations() {
+  async deleteAllParticipations() {
     return this.call<Question>('delete', `participations/all`)
+  },
+  async rebuildDatabase() {
+    return this.call('post', `rebuild-db`)
   }
 }

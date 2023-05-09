@@ -45,7 +45,7 @@ export default {
         v-bind:key="scoreEntry.playerName"
         class="text-body-1"
       >
-        {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
+        {{ scoreEntry.playerName }} - {{ scoreEntry.score }} - {{ "💩".repeat(scoreEntry.difficulty) }}
       </p>
     </v-sheet>
     <v-btn to="/new-quiz" :disabled="quizInfo.size === 0">{{

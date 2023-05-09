@@ -32,7 +32,7 @@ export default {
       this.totalNumberOfQuestions = response.data.size
       for (let i = 0; i < this.totalNumberOfQuestions; i++) {
         this.remainingQuestions.push(i + 1)
-        this.answers.push([-1] as Answer)
+        this.answers.push([0] as Answer)
       }
       this.remainingQuestions.sort(() => Math.random() - 0.5)
     })
@@ -57,7 +57,7 @@ export default {
         this.interval = setInterval(() => {
           this.timeRemaining--
           if (this.timeRemaining <= 0) {
-            this.answerQuestion([-1] as Answer)
+            this.answerQuestion([0] as Answer)
           }
         }, 1000)
         break
@@ -105,7 +105,7 @@ export default {
         clearInterval(this.interval)
       }
       await quizApiService
-        .postAnswers(participationStorageService.getPlayerName(), this.answers)
+        .postAnswers(participationStorageService.getPlayerName(), this.answers, this.difficulty)
         .then((response) => {
           participationStorageService.saveParticipationScore(response.data.score)
           this.$router.push('/quiz-results')

@@ -17,10 +17,10 @@ export default {
     max-width="800"
     width="100%"
   >
-    <h1 class="text-h6 text-md-h5 text-lg-h4 mb-4">Congratulation !</h1>
+    <h1 class="text-h6 text-md-h5 text-lg-h4 mb-4">Bravo !</h1>
     <h2 class="text-h6 text-md-h5 text-lg-h4 mb-4">{{ playerName }}</h2>
-    <p class="text-body-1 mb-4">You have finished the quiz.</p>
-    <p class="text-body-1 mb-4">Your score is:</p>
+    <p class="text-body-1 mb-4">Tu as terminé le quiz.</p>
+    <p class="text-body-1 mb-4">Voici ton score:</p>
     <h3 class="text-h6 text-md-h5 text-lg-h4 mb-4">{{ score }}</h3>
   </v-sheet>
 </template>

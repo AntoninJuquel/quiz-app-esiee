@@ -1,7 +1,7 @@
 export type Score = {
   playerName: string
   score: number
-  date: Date
+  difficulty: number
 }
 
 export type QuizInfo = {
@@ -18,13 +18,13 @@ export type PossibleAnswer = {
 
 export type Question = {
   id: number
+  image: string
   position: number
   title: string
   text: string
   possibleAnswers: Array<PossibleAnswer>
+  date: string
   multipleAnswers: boolean
-  image?: string
-  video?: string
 }
 
 export type Answer = number[]
@@ -34,7 +34,7 @@ export type Token = {
 }
 
 export enum Difficulty {
-  EASY = 'easy',
-  MEDIUM = 'medium',
-  HARD = 'hard'
+  EASY = 1,
+  MEDIUM = 2,
+  HARD = 3
 }

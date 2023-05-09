@@ -1,12 +1,25 @@
 <script lang="ts">
+import { format, parseISO } from "date-fns"
 import type { Question } from '@/types/quiz'
+import quizApiService from '@/services/QuizApiService'
 export default {
   data() {
     return {
       editedQuestion: {} as Question,
       newAnswer: '',
       selected: [] as number[],
-      loading: false
+      loading: false,
+      totalNumberOfQuestions: 0
+    }
+  },
+  computed: {
+    date: {
+      get() {
+        return this.editedQuestion.date
+      },
+      set(value: string) {
+        this.editedQuestion.date = format(parseISO(value), 'yyyy-MM-dd')
+      }
     }
   },
   props: {
@@ -28,7 +41,7 @@ export default {
     question: {
       handler: function (newQuestion: Question) {
         this.editedQuestion = { ...newQuestion }
-        this.selected = this.editedQuestion.possibleAnswers
+        this.selected = (this.editedQuestion.possibleAnswers || [])
           .map((answer) => {
             return answer.isCorrect ? answer.id : -1
           })
@@ -53,6 +66,7 @@ export default {
       })
     },
     addAnswer() {
+      if (!this.newAnswer) { return }
       this.editedQuestion.possibleAnswers.push({
         id: this.editedQuestion.possibleAnswers.length,
         isCorrect: false,
@@ -78,6 +92,13 @@ export default {
         this.editedQuestion.image = e.target?.result as string
       }
       reader.readAsDataURL(file)
+    },
+    async onChangeDate() {
+      await quizApiService
+        .getQuizInfo(this.editedQuestion.date).then((response) => {
+          this.editedQuestion.position = response.data.size + 1
+          this.totalNumberOfQuestions = response.data.size
+        })
     }
   }
 }
@@ -86,87 +107,42 @@ export default {
 <template>
   <v-card class="mx-auto" max-width="700">
     <v-card-title>
-      <v-text-field
-        v-if="!creation"
-        density="compact"
-        variant="underlined"
-        prepend-icon="mdi-close"
-        @click:prepend="deleteQuestion"
-        v-model="editedQuestion.position"
-        :min="1"
-        :max="totalNumberOfQuestions"
-        label="Position"
-        type="number"
-        :suffix="`/${totalNumberOfQuestions}`"
-      ></v-text-field>
-      <v-file-input
-        density="compact"
-        variant="underlined"
-        label="Image"
-        @update:model-value="onFileChange"
-        accept="image/png, image/jpeg, image/bmp"
-      ></v-file-input>
+      <input type="date" v-model="date" class="mx-2" @change="onChangeDate">
+      <v-text-field v-if="!creation" density="compact" variant="underlined" prepend-icon="mdi-close"
+        @click:prepend="deleteQuestion" v-model="editedQuestion.position" :min="1" :max="totalNumberOfQuestions"
+        label="Position" type="number" :suffix="`/${totalNumberOfQuestions}`"></v-text-field>
+      <v-file-input density="compact" variant="underlined" label="Image" @update:model-value="onFileChange"
+        accept="image/png, image/jpeg, image/bmp"></v-file-input>
     </v-card-title>
 
     <v-img v-if="editedQuestion.image" :src="editedQuestion.image" height="350px" cover></v-img>
 
     <v-card-title>
-      <v-text-field
-        density="compact"
-        variant="underlined"
-        v-model="editedQuestion.title"
-        label="Titre"
-      ></v-text-field>
-      <v-text-field
-        density="compact"
-        variant="underlined"
-        v-model="editedQuestion.text"
-        label="Question"
-      ></v-text-field>
+      <v-text-field density="compact" variant="underlined" v-model="editedQuestion.title" label="Titre"></v-text-field>
+      <v-text-field density="compact" variant="underlined" v-model="editedQuestion.text" label="Question"></v-text-field>
     </v-card-title>
 
     <v-card-text>
       <v-switch v-model="editedQuestion.multipleAnswers" label="Réponses multiples"></v-switch>
-      <v-text-field
-        density="compact"
-        variant="underlined"
-        v-model="newAnswer"
-        label="Réponse"
-        append-icon="mdi-plus"
-        @click:append="addAnswer"
-      ></v-text-field>
+      <v-form @submit.prevent="addAnswer">
+        <v-text-field density="compact" variant="underlined" v-model="newAnswer" label="Réponse" append-icon="mdi-plus"
+          @click:append="addAnswer"></v-text-field>
+      </v-form>
     </v-card-text>
 
     <v-card-text class="d-flex flex-column align-stretch" v-if="editedQuestion.multipleAnswers">
-      <v-sheet
-        class="d-flex"
-        v-for="(answer, index) in editedQuestion.possibleAnswers"
-        :key="index"
-      >
+      <v-sheet class="d-flex" v-for="(answer, index) in editedQuestion.possibleAnswers" :key="index">
         <v-checkbox-btn v-model="selected" :value="answer.id"></v-checkbox-btn>
-        <v-text-field
-          v-model="answer.text"
-          variant="underlined"
-          append-icon="mdi-delete"
-          @click:append="removeAnswer(index)"
-        ></v-text-field>
+        <v-text-field v-model="answer.text" variant="underlined" append-icon="mdi-delete"
+          @click:append="removeAnswer(index)"></v-text-field>
       </v-sheet>
     </v-card-text>
-
     <v-card-text v-else>
       <v-radio-group v-model="selected" row>
-        <v-sheet
-          class="d-flex"
-          v-for="(answer, index) in editedQuestion.possibleAnswers"
-          :key="index"
-        >
+        <v-sheet class="d-flex" v-for="(answer, index) in editedQuestion.possibleAnswers" :key="index">
           <v-radio :value="[answer.id]" class="flex-grow-0"></v-radio>
-          <v-text-field
-            v-model="answer.text"
-            variant="underlined"
-            append-icon="mdi-delete"
-            @click:append="removeAnswer(index)"
-          ></v-text-field>
+          <v-text-field v-model="answer.text" variant="underlined" append-icon="mdi-delete"
+            @click:append="removeAnswer(index)"></v-text-field>
         </v-sheet>
       </v-radio-group>
     </v-card-text>

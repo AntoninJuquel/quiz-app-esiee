@@ -1,4 +1,4 @@
-import type { Difficulty } from '@/types/quiz'
+import type { Difficulty } from "@/types/quiz"
 
 export default {
   clear() {
@@ -7,19 +7,19 @@ export default {
   savePlayerName(playerName: string) {
     localStorage.setItem('playerName', playerName)
   },
-  saveDifficulty(difficulty: Difficulty) {
-    localStorage.setItem('difficulty', difficulty)
-  },
   getPlayerName() {
     return localStorage.getItem('playerName') || ''
   },
+  saveDifficulty(difficulty: Difficulty) {
+    localStorage.setItem('difficulty', difficulty.toString())
+  },
   getDifficulty() {
-    return localStorage.getItem('difficulty') as Difficulty
+    return parseInt(localStorage.getItem('difficulty') || '1') as Difficulty
   },
   saveParticipationScore(participationScore: number) {
     localStorage.setItem('participationScore', participationScore.toString())
   },
   getParticipationScore() {
-    return localStorage.getItem('participationScore') || '0'
+    return parseInt(localStorage.getItem('participationScore') || '0')
   }
 }
