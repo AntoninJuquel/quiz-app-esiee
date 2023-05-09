@@ -1,6 +1,7 @@
 from flask import Flask, request
 from jwt_utils import is_admin
 from models import Question
+import datetime
 import jwt_utils
 import db
 import json
@@ -50,7 +51,9 @@ def AddQuestion():
     if "date" in payload:
         question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'], payload['date'])
     else:
-        question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        current_date_str = str(current_date)
+        question = Question(None, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'], current_date_str)
     q_db = db.QuizDatabase()
     question_id = q_db.add_question(question.to_dict())
     return {"id": question_id}, 200
@@ -71,7 +74,9 @@ def UpdateQuestion(question_id):
     if "date" in payload:
         question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'], payload['date'])
     else:
-        question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'])
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        current_date_str = str(current_date)
+        question = Question(question_id, payload['text'], payload['title'], payload['image'], payload['position'], payload['possibleAnswers'], current_date_str)
     q_db = db.QuizDatabase()
     question_exists = q_db.get_question(question_id)
     if question_exists is None:
@@ -125,7 +130,9 @@ def RemoveAllParticipations():
 def AddParticipation():
     payload = request.get_json()
     q_db = db.QuizDatabase()
-    questions = q_db.get_all_questions()
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    current_date_str = str(current_date)
+    questions = q_db.get_all_questions(date=current_date_str)
     difficulty_factor = 1
     if "difficulty" in payload:
         difficulty_factor = payload['difficulty']

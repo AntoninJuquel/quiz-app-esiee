@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 
 class Question:
-    def __init__(self, id, text, title, image, position, possible_answers, date=None):
+    def __init__(self, id, text, title, image, position, possible_answers, date):
         self.id = id
         self.text = text
         self.title = title
