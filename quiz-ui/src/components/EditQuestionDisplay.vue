@@ -1,6 +1,6 @@
 <script lang="ts">
 import { format, parseISO } from "date-fns"
-import type { Question } from '@/types/quiz'
+import type { Question, Category } from '@/types/quiz'
 import quizApiService from '@/services/QuizApiService'
 export default {
   data() {
@@ -9,8 +9,14 @@ export default {
       newAnswer: '',
       selected: [] as number[],
       loading: false,
-      totalNumberOfQuestions: 0
+      totalNumberOfQuestions: 0,
+      categories: [] as Category[]
     }
+  },
+  created() {
+    quizApiService.getCategories().then((response) => {
+      this.categories = response.data
+    })
   },
   computed: {
     date: {
@@ -20,7 +26,8 @@ export default {
       set(value: string) {
         this.editedQuestion.date = format(parseISO(value), 'yyyy-MM-dd')
       }
-    }
+    },
+
   },
   props: {
     creation: {
@@ -118,7 +125,8 @@ export default {
     <v-img v-if="editedQuestion.image" :src="editedQuestion.image" height="350px" cover></v-img>
 
     <v-card-title>
-      <v-text-field density="compact" variant="underlined" v-model="editedQuestion.title" label="Titre"></v-text-field>
+      <v-combobox dense v-model="editedQuestion.title" label="Titre" :items="categories" item-title="name"
+        item-value="name" clearable></v-combobox>
       <v-text-field density="compact" variant="underlined" v-model="editedQuestion.text" label="Question"></v-text-field>
     </v-card-title>
 

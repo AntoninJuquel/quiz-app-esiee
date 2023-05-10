@@ -2,6 +2,7 @@ export type Score = {
   playerName: string
   score: number
   difficulty: number
+  text: string
 }
 
 export type QuizInfo = {
@@ -37,4 +38,10 @@ export enum Difficulty {
   EASY = 1,
   MEDIUM = 2,
   HARD = 3
+}
+
+export type Category = {
+  id: number
+  name: string
+  emoji: string
 }

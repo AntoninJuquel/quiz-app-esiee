@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosHeaders } from 'axios'
 import { format } from 'date-fns'
-import type { Question, QuizInfo, Answer, Token, Difficulty } from '@/types/quiz'
-import type { Score } from '@/types/quiz'
+import type { Question, QuizInfo, Answer, Token, Difficulty, Category, Score } from '@/types/quiz'
 
 const MULTIPLE_ANSWERS_ENABLED = false
 
@@ -74,5 +73,8 @@ export default {
   },
   async rebuildDatabase() {
     return this.call('post', `rebuild-db`)
+  },
+  async getCategories() {
+    return this.call<Category[]>('get', `categories`)
   }
 }

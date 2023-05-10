@@ -6,32 +6,32 @@ const router = createRouter({
     {
       path: '/',
       name: 'HomePage',
-      component: () => import('../views/HomePage.vue')
+      component: () => import('../views/user/HomePage.vue')
     },
     {
       path: '/new-quiz',
       name: 'NewQuizPage',
-      component: () => import('../views/NewQuizPage.vue')
+      component: () => import('../views/user/NewQuizPage.vue')
     },
     {
       path: '/quiz',
       name: 'QuizPage',
-      component: () => import('../views/QuizPage.vue')
+      component: () => import('../views/user/QuizPage.vue')
     },
     {
       path: '/quiz-results',
       name: 'QuizResultsPage',
-      component: () => import('../views/QuizResultsPage.vue')
+      component: () => import('../views/user/QuizResultsPage.vue')
     },
     {
       path: '/admin',
       name: 'AdminPage',
-      component: () => import('../views/AdminPage.vue')
+      component: () => import('../views/admin/AdminPage.vue')
     },
     {
       path: '/edit-quiz',
       name: 'EditQuizPage',
-      component: () => import('../views/EditQuizPage.vue')
+      component: () => import('../views/admin/EditQuizPage.vue')
     }
   ]
 })

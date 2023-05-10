@@ -21,5 +21,11 @@ export default {
   },
   getParticipationScore() {
     return parseInt(localStorage.getItem('participationScore') || '0')
+  },
+  saveParticipationText(participationText: string) {
+    localStorage.setItem('participationText', participationText)
+  },
+  getParticipationText() {
+    return localStorage.getItem('participationText') || ''
   }
 }
