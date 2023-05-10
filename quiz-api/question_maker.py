@@ -8,7 +8,7 @@ question = {
     'possibleAnswers': []
 }
 
-def create_questions(date,number_of_questions):
+def create_questions(number_of_questions):
     questions = []
     for i in range(number_of_questions):
         questions.append(create_geography_question())
@@ -16,8 +16,7 @@ def create_questions(date,number_of_questions):
         questions.append(create_history_question())
     for i in range(number_of_questions):
         questions.append(create_musique_question())
-    for question in questions:
-        question['date'] = date
+    return questions
 
 
 def create_geography_question():
