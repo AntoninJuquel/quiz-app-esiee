@@ -142,8 +142,6 @@ def CreateQuestionAuto():
 
     questions = create_questions(number_of_questions)
     for question in questions:
-        if question is None:
-            continue
         question['date'] = date
         question['position'] = 1
         q_db.add_question(question)
@@ -172,6 +170,7 @@ def AddParticipation():
             score += 1
     score *= difficulty_factor
     participation_id = q_db.add_score(payload['playerName'], score, difficulty_factor)
+    emoji_txt = ""
     return {"playerName": payload['playerName'], "score":score ,"emoji":emoji_txt}, 200
 
 @app.route('/categories', methods=['GET'])

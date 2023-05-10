@@ -1,20 +1,12 @@
 import random, requests
 import base64
 import json
-question = {
-    'text': None,
-    'title': None,
-    'image': None,
-    'possibleAnswers': []
-}
 
 def create_questions(number_of_questions):
     questions = []
     for i in range(number_of_questions):
         questions.append(create_geography_question())
-    for i in range(number_of_questions):
         questions.append(create_history_question())
-    for i in range(number_of_questions):
         questions.append(create_musique_question())
     return questions
 
@@ -41,15 +33,14 @@ def create_geography_question():
         return guess_language()
     if question_type == "guess_currency":
         return guess_currency()
+    return guess_capital()
 
 def guess_capital():
     country = None
     while country is None:
-        try:
-            import random, requests
-            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        except:
-            pass
+        import random, requests
+        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question_img_url = country['flags']['png']
     question_img_base64 = base64.b64encode(requests.get(question_img_url).content).decode('utf-8')
@@ -63,11 +54,8 @@ def guess_capital():
     while len(question['possibleAnswers']) < 4:
         country = None
         while country is None:
-            try:
-                import random, requests
-                country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-            except:
-                pass
+            import random, requests
+            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
         if country['capital'][0] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['capital'][0],
@@ -78,11 +66,9 @@ def guess_capital():
 def guess_flag():
     country = None
     while country is None:
-        try:
-            import random, requests
-            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        except:
-            pass
+        import random, requests
+        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question_img_url = country['flags']['png']
     question_img_base64 = base64.b64encode(requests.get(question_img_url).content).decode('utf-8')
@@ -96,11 +82,8 @@ def guess_flag():
     while len(question['possibleAnswers']) < 4:
         country = None
         while country is None:
-            try:
-                import random, requests
-                country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-            except:
-                pass
+            import random, requests
+            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
         if country['name']['common'] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['name']['common'],
@@ -111,11 +94,9 @@ def guess_flag():
 def find_the_flag():
     country = None
     while country is None:
-        try:
-            import random, requests
-            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        except:
-            pass
+        import random, requests
+        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quel est le dragpeau du pays : " + country['name']['common'] + " ?"
     question['possibleAnswers'].append({
@@ -126,11 +107,8 @@ def find_the_flag():
     while len(question['possibleAnswers']) < 4:
         country = None
         while country is None:
-            try:
-                import random, requests
-                country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-            except:
-                pass
+            import random, requests
+            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
         if country['name']['common'] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['flag'],
@@ -141,11 +119,9 @@ def find_the_flag():
 def guess_continent():
     country = None
     while country is None:
-        try:
-            import random, requests
-            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        except:
-            pass
+        import random, requests
+        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quel est le continent du pays : " + country['name']['common'] + " ?"
     question['possibleAnswers'].append({
@@ -156,11 +132,8 @@ def guess_continent():
     while len(question['possibleAnswers']) < 4:
         country = None
         while country is None:
-            try:
-                import random, requests
-                country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-            except:
-                pass
+            import random, requests
+            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
         if country['region'] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['region'],
@@ -171,11 +144,9 @@ def guess_continent():
 def guess_language():
     country = None
     while country is None:
-        try:
-            import random, requests
-            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        except:
-            pass
+        import random, requests
+        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la langue parlée dans le pays : " + country['name']['common'] + " ?"
     question['possibleAnswers'].append({
@@ -186,11 +157,8 @@ def guess_language():
     while len(question['possibleAnswers']) < 4:
         country = None
         while country is None:
-            try:
-                import random, requests
-                country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-            except:
-                pass
+            import random, requests
+            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
         if country['languages'][0] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['languages'][0],
@@ -201,11 +169,9 @@ def guess_language():
 def guess_currency():
     country = None
     while country is None:
-        try:
-            import random, requests
-            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        except:
-            pass
+        import random, requests
+        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la monnaie du pays : " + country['name']['common'] + " ?"
     question['possibleAnswers'].append({
@@ -216,11 +182,8 @@ def guess_currency():
     while len(question['possibleAnswers']) < 4:
         country = None
         while country is None:
-            try:
-                import random, requests
-                country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-            except:
-                pass
+            import random, requests
+            country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
         if country['currencies'][0] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['currencies'][0],
@@ -234,6 +197,7 @@ def create_musique_question():
         festivals = json.load(json_file)
     # get random festival
     festival = festivals[random.randint(0, len(festivals) - 1)]
+    question = {"possibleAnswers":[]}
     question['title'] = "Musique"
     question['text'] = "Où se déroule le festival : " + festival['nom_du_festival'] + " ?"
     question['possibleAnswers'].append({
@@ -261,6 +225,7 @@ def create_history_question():
     # get random histoire
     histoire = histoires[random.randint(0, len(histoires) - 1)]
 
+    question = {"possibleAnswers":[]}
     question['title'] = "Histoire"
     question['text'] = "De quand date ce document historique ?" 
     question_image_url = "https://data.culture.gouv.fr/explore/dataset/grands-documents-et-images-de-lhistoire-de-france-conserves-par-les-archives-/files/" + histoire["image"]["id"] + "/download/"
@@ -281,3 +246,8 @@ def create_history_question():
                 'isCorrect': False
             })
     return question
+
+
+questions = create_questions(3)
+for q in questions:
+    print(q["text"])
