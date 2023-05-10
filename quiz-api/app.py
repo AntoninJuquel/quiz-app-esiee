@@ -170,5 +170,11 @@ def AddParticipation():
     participation_id = q_db.add_score(payload['playerName'], score, difficulty_factor)
     return {"playerName": payload['playerName'], "score":score ,"emoji":emoji_txt}, 200
 
+@app.route('/categories', methods=['GET'])
+def GetCategories():
+    q_db = db.QuizDatabase()
+    categories = q_db.get_categories()
+    return json.dumps(categories), 200
+
 if __name__ == "__main__":
     app.run()

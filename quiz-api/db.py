@@ -282,3 +282,17 @@ class QuizDatabase:
         cursor = self.db_connection.cursor()
         cursor.execute("DELETE FROM participations")
         self.db_connection.commit()
+
+    def get_categories(self):
+        cursor = self.db_connection.cursor()
+        cursor.execute("SELECT * FROM question_categories")
+        rows = cursor.fetchall()
+        categories = []
+        for row in rows:
+            category = {
+                'id': row[0],
+                'name': row[1],
+                'emoji' : row[2]
+            }
+            categories.append(category)
+        return categories
