@@ -136,7 +136,7 @@ def CreateQuestionAuto():
     number_of_questions = 3
     date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
     if "number_of_questions" in request.args:
-        number_of_questions = int(request.args.get('number_of_questions'))
+        number_of_questions = int(request.args.get('number-of-questions'))
     if "date" in request.args:
         date = str(request.args.get('date'))
 
