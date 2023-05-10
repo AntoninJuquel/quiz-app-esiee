@@ -41,7 +41,26 @@ class QuizDatabase:
                 date TEXT DEFAULT (strftime('%Y-%m-%d','now'))
             );
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS questions_category (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                emoji TEXT NOT NULL
+            )
+        ''')
         self.db_connection.commit()
+
+        # insert default categories
+        cursor.execute("SELECT * FROM questions_category")
+        if len(cursor.fetchall()) == 0:
+            cursor.execute("INSERT INTO questions_category (name, emoji) VALUES (?, ?)", ("Géographie", "🌍"))
+            cursor.execute("INSERT INTO questions_category (name, emoji) VALUES (?, ?)", ("Histoire", "📜"))
+            cursor.execute("INSERT INTO questions_category (name, emoji) VALUES (?, ?)", ("Culture Générale", "📚"))
+            cursor.execute("INSERT INTO questions_category (name, emoji) VALUES (?, ?)", ("Musique", "🎵"))
+            cursor.execute("INSERT INTO questions_category (name, emoji) VALUES (?, ?)", ("Science", "🔬"))
+        
+        self.db_connection.commit()
+
 
     def rebuild_db(self):
         try:

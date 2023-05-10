@@ -49,3 +49,17 @@ class Participation:
             'points': self.points,
             'difficulty': self.difficulty
         }
+
+class QuestionCategory:
+    def __init__(self,id,name,emoji):
+        self.id = id
+        self.name = name
+        self.emoji = emoji
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'emoji': self.emoji
+        }
+

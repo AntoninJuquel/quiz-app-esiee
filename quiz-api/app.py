@@ -1,4 +1,5 @@
 from flask import Flask, request
+from question_maker import create_questions
 from jwt_utils import is_admin
 from models import Question
 import datetime
@@ -126,6 +127,25 @@ def RemoveAllParticipations():
     q_db.remove_all_participations()
     return "Ok", 204
 
+@app.route('/create-question-auto', methods=['POST'])
+def CreateQuestionAuto():
+    if check_auth_header(request.headers.get('Authorization')) is False:
+        return {"error":"Unauthorized"}, 401
+    q_db = db.QuizDatabase()
+
+    number_of_questions = 3
+    date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    if "number_of_questions" in request.args:
+        number_of_questions = int(request.args.get('number_of_questions'))
+    if "date" in request.args:
+        date = str(request.args.get('date'))
+
+    questions = create_questions(number_of_questions, date)
+    for question in questions:
+        q_db.add_question(question.to_dict())
+
+    return "Ok", 200
+
 @app.route('/participations', methods=['POST'])
 def AddParticipation():
     payload = request.get_json()
@@ -148,7 +168,7 @@ def AddParticipation():
             score += 1
     score *= difficulty_factor
     participation_id = q_db.add_score(payload['playerName'], score, difficulty_factor)
-    return {"playerName": payload['playerName'], "score":score}, 200
+    return {"playerName": payload['playerName'], "score":score ,"emoji":emoji_txt}, 200
 
 if __name__ == "__main__":
     app.run()
