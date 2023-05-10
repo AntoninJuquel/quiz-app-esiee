@@ -247,7 +247,3 @@ def create_history_question():
             })
     return question
 
-
-questions = create_questions(3)
-for q in questions:
-    print(q["text"])
