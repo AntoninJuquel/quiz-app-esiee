@@ -285,7 +285,7 @@ class QuizDatabase:
 
     def get_categories(self):
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT * FROM question_categories")
+        cursor.execute("SELECT * FROM questions_category")
         rows = cursor.fetchall()
         categories = []
         for row in rows:
