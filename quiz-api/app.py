@@ -140,7 +140,7 @@ def CreateQuestionAuto():
     if "date" in request.args:
         date = str(request.args.get('date'))
 
-    questions = create_questions(number_of_questions, date)
+    questions = create_questions(date, number_of_questions)
     for question in questions:
         q_db.add_question(question.to_dict())
 
