@@ -11,6 +11,8 @@ def create_questions(number_of_questions):
     for q in questions:
         if "image" not in q:
             q['image'] = ""
+        # shuffle possibleAnswers randomly
+        q['possibleAnswers'] = random.sample(q['possibleAnswers'], len(q['possibleAnswers']))
     return questions
 
 

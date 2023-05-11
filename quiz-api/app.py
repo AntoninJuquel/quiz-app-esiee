@@ -179,6 +179,10 @@ def AddParticipation():
     emoji_txt = ""
     for i in range(len(questions)):
         if answsers[i] < 1:
+            if questions[i]['title'] in categories_emoji_array:
+                categories_emoji_array[questions[i]['title']].append("❌")
+            else:
+                categories_emoji_array['Bonus'].append("❌") 
             continue
         if questions[i]['possibleAnswers'][answsers[i] - 1]['isCorrect']:
             if questions[i]['title'] in categories_emoji_array:
