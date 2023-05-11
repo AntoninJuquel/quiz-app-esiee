@@ -8,6 +8,9 @@ def create_questions(number_of_questions):
         questions.append(create_geography_question())
         questions.append(create_history_question())
         questions.append(create_musique_question())
+    for q in questions:
+        if "image" not in q:
+            q['image'] = ""
     return questions
 
 
@@ -149,8 +152,10 @@ def guess_language():
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la langue parlée dans le pays : " + country['name']['common'] + " ?"
+    languages = country['languages']
+    lang = languages[list(languages.keys())[0]]
     question['possibleAnswers'].append({
-        'text': country['languages'][0],
+        'text': lang,
         'isCorrect': True
     })
     # get 3 other random countries
@@ -159,9 +164,12 @@ def guess_language():
         while country is None:
             import random, requests
             country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        if country['languages'][0] not in [a['text'] for a in question['possibleAnswers']]:
+
+        languages = country['languages']
+        lang = languages[list(languages.keys())[0]]
+        if lang not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
-                'text': country['languages'][0],
+                'text': lang,
                 'isCorrect': False
             })
     return question
@@ -174,8 +182,10 @@ def guess_currency():
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la monnaie du pays : " + country['name']['common'] + " ?"
+    currencies = country['currencies']
+    currency = currencies[list(currencies.keys())[0]]['name']
     question['possibleAnswers'].append({
-        'text': country['currencies'][0],
+        'text': currency,
         'isCorrect': True
     })
     # get 3 other random countries
@@ -184,9 +194,12 @@ def guess_currency():
         while country is None:
             import random, requests
             country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
-        if country['currencies'][0] not in [a['text'] for a in question['possibleAnswers']]:
+
+        currencies = country['currencies']
+        currency = currencies[list(currencies.keys())[0]]['name']
+        if currency not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
-                'text': country['currencies'][0],
+                'text': currency,
                 'isCorrect': False
             })
     return question
@@ -199,6 +212,7 @@ def create_musique_question():
     festival = festivals[random.randint(0, len(festivals) - 1)]
     question = {"possibleAnswers":[]}
     question['title'] = "Musique"
+    question['image'] = "no_img"
     question['text'] = "Où se déroule le festival : " + festival['nom_du_festival'] + " ?"
     question['possibleAnswers'].append({
         'text': festival['region_principale_de_deroulement'],

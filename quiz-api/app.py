@@ -100,8 +100,6 @@ def GetQuestionByPosition():
         question = q_db.get_question_by_position(position,date)
     else:
         question = q_db.get_all_questions(date)
-        for q in question:
-            q.pop('image', None)
 
     if question is None:
         return {"error":"Not found"}, 404
