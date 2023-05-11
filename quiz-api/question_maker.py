@@ -13,6 +13,7 @@ def create_questions(number_of_questions):
             q['image'] = ""
         # shuffle possibleAnswers randomly
         q['possibleAnswers'] = random.sample(q['possibleAnswers'], len(q['possibleAnswers']))
+    print(len(questions))
     return questions
 
 
@@ -45,6 +46,8 @@ def guess_capital():
     while country is None:
         import random, requests
         country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+        if "capital" not in country:
+            country = None
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question_img_url = country['flags']['png']
@@ -61,6 +64,8 @@ def guess_capital():
         while country is None:
             import random, requests
             country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+            if "capital" not in country:
+                country = None
         if country['capital'][0] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['capital'][0],
