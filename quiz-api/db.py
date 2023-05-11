@@ -144,20 +144,26 @@ class QuizDatabase:
         question_id = question['id']
         date = question['date']
         new_pos = question['position']
+        new_date = question['date']
         old_pos = None
-        cursor.execute("SELECT position FROM questions WHERE id=?", (question['id'],))
+        cursor.execute("SELECT position, date FROM questions WHERE id=?", (question['id'],))
         row = cursor.fetchone()
         if row is not None:
             old_pos = row[0]
+            old_date = row[1]
 
-        questions = self.get_all_questions(date=date)
+        questions = self.get_all_questions(date=old_date)
         if len(questions) > 0:
             q_arr = []
             for q in questions:
                 q_arr.append({q["id"]: q["position"]})
+            if new_date != old_date:
+                # remove the question_id from q_arr
+                q_arr.pop(old_pos - 1)
 
-            my_q = q_arr.pop(old_pos - 1)
-            q_arr.insert(new_pos - 1, my_q)
+            else:
+                my_q = q_arr.pop(old_pos - 1)
+                q_arr.insert(new_pos - 1, my_q)
             
             def update_pos(q_id, pos):
                 cursor.execute("UPDATE questions SET position=? WHERE id=?", (pos, q_id))
@@ -167,6 +173,11 @@ class QuizDatabase:
                 q_id = list(q.keys())[0]
                 pos = i + 1
                 update_pos(q_id, pos)
+        if new_date != old_date:
+            cursor.execute("UPDATE questions SET date=? WHERE id=?", (new_date, question_id))
+            self.db_connection.commit()
+            question["position"] = 1
+            self.update_question(question)
 
         cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=?, date=? WHERE id=?", (
             question['text'], question['title'], question['image'], question['position'], question['date'], question['id']))
