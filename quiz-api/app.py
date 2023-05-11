@@ -154,7 +154,7 @@ def CreateQuestionAuto():
         question['position'] = 1
         q_db.add_question(question)
 
-    text = "Created " + str(number_of_questions) + " questions"
+    text = "Created " + str(len(questions)) + " questions"
     return text, 200
 
 @app.route('/participations', methods=['POST'])
