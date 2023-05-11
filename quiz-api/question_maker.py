@@ -52,7 +52,7 @@ def guess_capital():
     question['title'] = "Géographie"
     question_img_url = country['flags']['png']
     question_img_base64 = base64.b64encode(requests.get(question_img_url).content).decode('utf-8')
-    question['image'] = question_img_base64
+    question['image'] = "data:image/png;base64," + question_img_base64
     question['text'] = "Quelle est la capitale du pays nommé : " + country['name']['common'] + " ?"
     question['possibleAnswers'].append({
         'text': country['capital'][0],
@@ -82,7 +82,7 @@ def guess_flag():
     question['title'] = "Géographie"
     question_img_url = country['flags']['png']
     question_img_base64 = base64.b64encode(requests.get(question_img_url).content).decode('utf-8')
-    question['image'] = question_img_base64
+    question['image'] = "data:image/png;base64," + question_img_base64
     question['text'] = "Quel est le pays représenté par ce drapeau ?"
     question['possibleAnswers'].append({
         'text': country['name']['common'],
@@ -159,6 +159,9 @@ def guess_language():
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la langue parlée dans le pays : " + country['name']['common'] + " ?"
+    question_img_url = country['flags']['png']
+    question_img_base64 = base64.b64encode(requests.get(question_img_url).content).decode('utf-8')
+    question['image'] = "data:image/png;base64," + question_img_base64
     languages = country['languages']
     lang = languages[list(languages.keys())[0]]
     question['possibleAnswers'].append({
@@ -189,6 +192,9 @@ def guess_currency():
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la monnaie du pays : " + country['name']['common'] + " ?"
+    question_img_url = country['flags']['png']
+    question_img_base64 = base64.b64encode(requests.get(question_img_url).content).decode('utf-8')
+    question['image'] = "data:image/png;base64," + question_img_base64
     currencies = country['currencies']
     currency = currencies[list(currencies.keys())[0]]['name']
     question['possibleAnswers'].append({
@@ -251,7 +257,7 @@ def create_history_question():
     question['text'] = "De quand date ce document historique ?" 
     question_image_url = "https://data.culture.gouv.fr/explore/dataset/grands-documents-et-images-de-lhistoire-de-france-conserves-par-les-archives-/files/" + histoire["image"]["id"] + "/download/"
     question_image_base64 = base64.b64encode(requests.get(question_image_url).content).decode('ascii')
-    question['image'] = question_image_base64
+    question['image'] = "data:image/png;base64," + question_image_base64
 
     question['possibleAnswers'].append({
         'text': histoire['date_du_document'],
