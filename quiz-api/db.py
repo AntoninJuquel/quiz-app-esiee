@@ -151,21 +151,22 @@ class QuizDatabase:
             old_pos = row[0]
 
         questions = self.get_all_questions(date=date)
-        q_arr = []
-        for q in questions:
-            q_arr.append({q["id"]: q["position"]})
+        if len(questions) > 0:
+            q_arr = []
+            for q in questions:
+                q_arr.append({q["id"]: q["position"]})
 
-        my_q = q_arr.pop(old_pos - 1)
-        q_arr.insert(new_pos - 1, my_q)
-        
-        def update_pos(q_id, pos):
-            cursor.execute("UPDATE questions SET position=? WHERE id=?", (pos, q_id))
-            self.db_connection.commit()
+            my_q = q_arr.pop(old_pos - 1)
+            q_arr.insert(new_pos - 1, my_q)
+            
+            def update_pos(q_id, pos):
+                cursor.execute("UPDATE questions SET position=? WHERE id=?", (pos, q_id))
+                self.db_connection.commit()
 
-        for i, q in enumerate(q_arr):
-            q_id = list(q.keys())[0]
-            pos = i + 1
-            update_pos(q_id, pos)
+            for i, q in enumerate(q_arr):
+                q_id = list(q.keys())[0]
+                pos = i + 1
+                update_pos(q_id, pos)
 
         cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=? WHERE id=?", (
             question['text'], question['title'], question['image'], question['position'], question['id']))
