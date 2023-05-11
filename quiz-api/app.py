@@ -87,12 +87,22 @@ def UpdateQuestion(question_id):
 
 @app.route('/questions', methods=['GET'])
 def GetQuestionByPosition():
-    position = request.args.get('position')
-    date = request.args.get('date')
+    position = None
+    date = None
+    if "position" in request.args:
+        position = request.args.get('position')
+    if "date" in request.args:
+        date = request.args.get('date')
 
     q_db = db.QuizDatabase()
 
-    question = q_db.get_question_by_position(position,date)
+    if position:
+        question = q_db.get_question_by_position(position,date)
+    else:
+        question = q_db.get_all_questions(date)
+        for q in question:
+            q.pop('image', None)
+
     if question is None:
         return {"error":"Not found"}, 404
     return json.dumps(question), 200
@@ -163,14 +173,41 @@ def AddParticipation():
     
     score = 0
     answsers = payload['answers']
+    categories = q_db.get_categories()
+    categories_emoji_array = {}
+    for category in categories:
+        categories_emoji_array[category['name']] = []
+    categories_emoji_array['Bonus'] = []
+    emoji_txt = ""
     for i in range(len(questions)):
         if answsers[i] < 1:
             continue
         if questions[i]['possibleAnswers'][answsers[i] - 1]['isCorrect']:
+            if questions[i]['title'] in categories_emoji_array:
+                categories_emoji_array[questions[i]['title']].append("✅")
+            else:
+                categories_emoji_array['Bonus'].append("✅")
             score += 1
+        else:
+            if questions[i]['title'] in categories_emoji_array:
+                categories_emoji_array[questions[i]['title']].append("❌")
+            else:
+                categories_emoji_array['Bonus'].append("❌") 
     score *= difficulty_factor
+    difficulty_emoji = None
+    if difficulty_factor == 1:
+        difficulty_emoji = "🤓"
+    elif difficulty_factor == 2:
+        difficulty_emoji = "😎"
+    elif difficulty_factor == 3:
+        difficulty_emoji = "🤯"
+    emoji_txt += "Difficulty: " + difficulty_emoji + "\n"
+    for category in categories:
+        if len(categories_emoji_array[category['name']]) > 0:
+            emoji_txt += category['emoji'] + "".join(categories_emoji_array[category['name']]) + "\n"
+    if len(categories_emoji_array['Bonus']) > 0:
+        emoji_txt += "🎁" + "".join(categories_emoji_array['Bonus']) + "\n"
     participation_id = q_db.add_score(payload['playerName'], score, difficulty_factor)
-    emoji_txt = ""
     return {"playerName": payload['playerName'], "score":score ,"emoji":emoji_txt}, 200
 
 @app.route('/categories', methods=['GET'])
