@@ -83,6 +83,7 @@ def UpdateQuestion(question_id):
     if question_exists is None:
         return {"error":"Not found"}, 404
     q_db.update_question(question.to_dict())
+    print("Updated question date :", question.date)
     return "Ok", 204
 
 @app.route('/questions', methods=['GET'])
