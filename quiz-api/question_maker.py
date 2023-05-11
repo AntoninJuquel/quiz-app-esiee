@@ -225,7 +225,7 @@ def create_musique_question():
     festival = festivals[random.randint(0, len(festivals) - 1)]
     question = {"possibleAnswers":[]}
     question['title'] = "Musique"
-    question['image'] = "no_img"
+    question['image'] = ""
     question['text'] = "Où se déroule le festival : " + festival['nom_du_festival'] + " ?"
     question['possibleAnswers'].append({
         'text': festival['region_principale_de_deroulement'],
