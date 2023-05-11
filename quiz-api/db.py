@@ -168,8 +168,12 @@ class QuizDatabase:
                 pos = i + 1
                 update_pos(q_id, pos)
 
-        cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=? WHERE id=?", (
-            question['text'], question['title'], question['image'], question['position'], question['id']))
+        if "date" in question:
+            cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=? WHERE id=?", (
+                question['text'], question['title'], question['image'], question['position'], question['id']))
+        else:
+            cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=? date=? WHERE id=?", (
+                question['text'], question['title'], question['image'], question['position'], question['date'], question['id']))
         cursor.execute("DELETE FROM possible_answers WHERE question_id=?", (question['id'],))
         for answer in question['possibleAnswers']:
             cursor.execute("INSERT INTO possible_answers (text, isCorrect, question_id) VALUES (?, ?, ?)", (
