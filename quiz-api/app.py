@@ -148,13 +148,11 @@ def CreateQuestionAuto():
     if "number-of-questions" in request.args:
         number_of_questions = int(request.args.get('number-of-questions'))
     if "date" in request.args:
-        print("IT WORKKSSS")
         date = str(request.args.get('date'))
 
     questions = create_questions(number_of_questions)
     for question in questions:
         question['date'] = date
-        print(date)
         question['position'] = 1
         q_db.add_question(question)
 

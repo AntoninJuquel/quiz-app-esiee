@@ -86,7 +86,6 @@ class QuizDatabase:
         cursor = self.db_connection.cursor()
 
         date = question['date']
-        print(date)
         current_date = datetime.datetime.now().strftime("%Y-%m-%d")
         current_date_str = str(current_date)
         if date:
