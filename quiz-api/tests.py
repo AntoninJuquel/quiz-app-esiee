@@ -147,6 +147,68 @@ class TestCreateQuestionAuto(UnitTests):
             update_question_to_tomorrow(questions_dict[position]['id'])
             check_positions_are_valid(self.current_date)
             check_positions_are_valid(self.tomorrow_date)
+
+class TestCrudCategory(UnitTests):
+    def __init__(self):
+        super().__init__()
+        self.test_category_endpoint = self.base_url + "/categories"
+        self.test_category = {
+            "name": "Cinéma",
+            "emoji": "🎬"
+        }
+
+    def test_create_category(self):
+        res = requests.post(self.test_category_endpoint, json=self.test_category, headers={"Authorization": "Bearer " + self.get_token()})
+        if res.status_code == 201:
+            self.print_success("test_create_category passed")
+        else:
+            self.print_error("test_create_category failed")
+
+    def test_read_category(self):
+        res = requests.get(self.test_category_endpoint)
+        if res.status_code == 200:
+            self.print_success("test_read_category passed")
+        else:
+            self.print_error("test_read_category failed")
+
+        # check cinema category is in the list
+        res = res.json()
+        isInList = False
+        for category in res:
+            if category['name'] == self.test_category['name']:
+                isInList = True
+        if isInList:
+            self.print_success("test_read_category passed")
+        else:
+            self.print_error("test_read_category failed")
+    
+    def test_update_category(self):
+        # get all categories
+        res = requests.get(self.test_category_endpoint)
+        res = res.json()
+        for category in res:
+            if category['name'] == self.test_category['name']:
+                category['name'] = "Cinéma 2"
+                category['emoji'] = "🎥"
+                # update category
+                res = requests.put(self.test_category_endpoint + "/" + str(category['id']), json=category, headers={"Authorization": "Bearer " + self.get_token()})
+                if res.status_code == 204:
+                    self.print_success("test_update_category passed")
+                else:
+                    self.print_error("test_update_category failed")
+                return
+        self.print_error("test_update_category failed")
+
+    def test_delete_category(self):
+        # get all categories
+        res = requests.get(self.test_category_endpoint)
+        res = res.json()
+        for category in res:
+            if category['name'] == "Cinéma 2":
+                # delete category
+                res = requests.delete(self.test_category_endpoint + "/" + str(category['id']), headers={"Authorization": "Bearer " + self.get_token()})
+                if res.status_code == 204:
+                    self.print_success("test_delete_category passed")
         
 
 if __name__ == "__main__":

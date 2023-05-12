@@ -221,5 +221,32 @@ def GetCategories():
     categories = q_db.get_categories()
     return json.dumps(categories), 200
 
+@app.route('/categories', methods=['POST'])
+def AddCategory():
+    if check_auth_header(request.headers.get('Authorization')) is False:
+        return {"error":"Unauthorized"}, 401
+    payload = request.get_json()
+    q_db = db.QuizDatabase()
+    q_db.add_category(payload)
+    return "Ok", 201
+
+@app.route('/categories/<int:category_id>', methods=['DELETE'])
+def RemoveCategory(category_id):
+    if check_auth_header(request.headers.get('Authorization')) is False:
+        return {"error":"Unauthorized"}, 401
+    q_db = db.QuizDatabase()
+    q_db.remove_category(category_id)
+    return "Ok", 204
+
+@app.route('/categories/<int:category_id>', methods=['PUT'])
+def UpdateCategory(category_id):
+    if check_auth_header(request.headers.get('Authorization')) is False:
+        return {"error":"Unauthorized"}, 401
+    payload = request.get_json()
+    q_db = db.QuizDatabase()
+    q_db.update_category(payload)
+    return "Ok", 204
+
+
 if __name__ == "__main__":
     app.run()

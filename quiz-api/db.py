@@ -326,3 +326,18 @@ class QuizDatabase:
             }
             categories.append(category)
         return categories
+
+    def add_category(self, category):
+        cursor = self.db_connection.cursor()
+        cursor.execute("INSERT INTO questions_category (name, emoji) VALUES (?, ?)", (category['name'], category['emoji']))
+        self.db_connection.commit()
+
+    def update_category(self, category):
+        cursor = self.db_connection.cursor()
+        cursor.execute("UPDATE questions_category SET name=?, emoji=? WHERE id=?", (category['name'], category['emoji'], category['id']))
+        self.db_connection.commit()
+
+    def delete_category(self, category_id):
+        cursor = self.db_connection.cursor()
+        cursor.execute("DELETE FROM questions_category WHERE id=?", (category_id,))
+        self.db_connection.commit()
