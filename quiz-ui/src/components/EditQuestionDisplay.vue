@@ -125,7 +125,7 @@ export default {
     <v-img v-if="editedQuestion.image" :src="editedQuestion.image" height="350px" cover></v-img>
 
     <v-card-title>
-      <v-combobox dense v-model="editedQuestion.title" label="Titre" :items="categories" item-title="name"
+      <v-combobox dense v-model="editedQuestion.title" label="Titre" :items="categories.map(cat => cat.name)" item-title="name"
         item-value="name" clearable></v-combobox>
       <v-text-field density="compact" variant="underlined" v-model="editedQuestion.text" label="Question"></v-text-field>
     </v-card-title>

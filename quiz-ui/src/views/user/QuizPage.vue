@@ -108,7 +108,7 @@ export default {
         .postAnswers(participationStorageService.getPlayerName(), this.answers, this.difficulty)
         .then((response) => {
           participationStorageService.saveParticipationScore(response.data.score)
-          participationStorageService.saveParticipationText(response.data.text)
+          participationStorageService.saveParticipationEmoji(response.data.emoji)
           this.$router.push('/quiz-results')
         })
         .catch((error) => {

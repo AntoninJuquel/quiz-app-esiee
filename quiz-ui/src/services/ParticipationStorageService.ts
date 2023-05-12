@@ -22,10 +22,10 @@ export default {
   getParticipationScore() {
     return parseInt(localStorage.getItem('participationScore') || '0')
   },
-  saveParticipationText(participationText: string) {
-    localStorage.setItem('participationText', participationText)
+  saveParticipationEmoji(participationEmoji: string) {
+    localStorage.setItem('participationEmoji', participationEmoji)
   },
-  getParticipationText() {
-    return localStorage.getItem('participationText') || ''
+  getParticipationEmoji() {
+    return localStorage.getItem('participationEmoji') || ''
   }
 }

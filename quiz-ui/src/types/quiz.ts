@@ -2,7 +2,7 @@ export type Score = {
   playerName: string
   score: number
   difficulty: number
-  text: string
+  emoji: string
 }
 
 export type QuizInfo = {
