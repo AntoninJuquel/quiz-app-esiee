@@ -25,7 +25,9 @@ def hello_world():
 @app.route('/quiz-info', methods=['GET'])
 def GetQuizInfo():
     q_db = db.QuizDatabase()
-    date = request.args.get('date')
+    date = None
+    if "date" in request.args:
+        date = request.args.get('date')
     questions = q_db.get_all_questions(date)
     score = q_db.get_all_participations(date)
     return {"size": len(questions), "scores": score}, 200
@@ -143,14 +145,16 @@ def CreateQuestionAuto():
 
     number_of_questions = 3
     date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    if "number_of_questions" in request.args:
+    if "number-of-questions" in request.args:
         number_of_questions = int(request.args.get('number-of-questions'))
     if "date" in request.args:
+        print("IT WORKKSSS")
         date = str(request.args.get('date'))
 
     questions = create_questions(number_of_questions)
     for question in questions:
         question['date'] = date
+        print(date)
         question['position'] = 1
         q_db.add_question(question)
 

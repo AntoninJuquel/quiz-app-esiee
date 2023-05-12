@@ -1,14 +1,17 @@
 import requests
+from db import QuizDatabase
 
 class UnitTests:
     def __init__(self):
         self.base_url = "http://127.0.0.1:5000"
     
     def print_success(self, test_name):
-        print("\033[92m" + test_name + " passed\033[0m")
+        success_emoji = "✅"
+        print("\033[92m" + success_emoji + " " +  test_name + " \033[0m")
     
     def print_error(self, test_name):
-        print("\033[91m" + test_name + " failed\033[0m")
+        error_emoji = "❌"
+        print("\033[91m" + error_emoji + " " +  test_name + " \033[0m")
 
     def get_token(self):
         url = self.base_url + "/login"
@@ -22,7 +25,7 @@ class UnitTests:
         url = self.base_url + "/rebuild-db"
         response = requests.post(url, json={"password":"flask2023"})
 
-class TestUpdateQuestions(UnitTests):
+class TestReadQuestions(UnitTests):
     def __init__(self):
         super().__init__()
         question_dict = {
@@ -48,7 +51,103 @@ class TestUpdateQuestions(UnitTests):
         if data['size'] != 4:
             self.print_error("test_read_questions has wrong size")
             return
-        self.print_success("test_read_questions passed")
+        self.print_success("test_read_questions 4 questions were created") 
+        self.tearup()
+
+class TestCreateQuestionAuto(UnitTests):
+    def __init__(self):
+        super().__init__()
+        self.number_of_questions = 2
+        self.number_of_supported_categories = 3
+        self.current_date = "2021-05-01"
+        self.tomorrow_date = "2021-05-02"
+        self.current_cats = ["Géographie", "Histoire", "Musique"]
+        self.test_create_question_auto_endpoint = self.base_url + "/create-question-auto?number-of-questions=" + str(self.number_of_questions) + "&date=" + self.current_date
+    
+    def test_create_question_auto(self):
+        token = self.get_token()
+        res = requests.post(self.test_create_question_auto_endpoint, headers={"Authorization": "Bearer " + token})
+        if res.status_code == 200:
+            self.print_success("test_create_question_auto passed")
+        else:
+            self.print_error("test_create_question_auto failed")
+
+
+
+    def test_read_questions_auto(self):
+        # get all questions at current date
+        url = self.base_url + "/quiz-info?date=" + self.current_date
+        response = requests.get(url)
+        res = response.json()
+        if res['size'] == self.number_of_questions * self.number_of_supported_categories:
+            self.print_success("test_read_questions_auto passed")
+        else:
+            self.print_error("test_read_questions_auto failed")
+
+        url = self.base_url + "/questions?date=" + self.current_date
+        response = requests.get(url)
+        res = response.json()
+
+        tmp_cat_list = self.current_cats.copy()
+        for question in res:
+            if question['title'] in tmp_cat_list:
+                tmp_cat_list.remove(question['title'])
+        
+        if len(tmp_cat_list) == 0:
+            self.print_success("test_read_questions_auto passed")
+        else:
+            self.print_error("test_read_questions_auto failed")
+
+    def test_update_auto_question(self):
+        # list all questions
+        url = self.base_url + "/questions" 
+        response = requests.get(url)
+        questions = response.json()
+        questions_dict = []
+        for question in questions:
+            data = {
+                "id": question['id'],
+                "position": question['position'],
+                "title": question['title']
+            }
+            questions_dict.append(data)
+        
+        num = self.number_of_questions * self.number_of_supported_categories
+
+        def update_question_to_tomorrow(id):
+            # get question as json
+            url = self.base_url + "/questions/" + str(id)
+            response = requests.get(url)
+            question = response.json()
+            # update question
+            question['date'] = self.tomorrow_date
+            # send put request
+            url = self.base_url + "/questions/" + str(id)
+            response = requests.put(url, json=question, headers={"Authorization": "Bearer " + self.get_token()})
+            if response.status_code == 204:
+                self.print_success("question updated successfully")
+            else:
+                self.print_error("question not updated successfully")
+
+        def check_positions_are_valid(date):
+            # get all questions at current date
+            # check that positions are valid, starts at 1 and just increments by 1
+            url = self.base_url + "/questions?date=" + date
+            response = requests.get(url)
+            res = response.json()
+            for i in range(len(res)):
+                if res[i]['position'] != i + 1:
+                    self.print_error("positions are not valid")
+                    return
+                else:
+                    self.print_success("positions are valid")
+            
+
+        for position in range(int(num/2) ,num ):
+            update_question_to_tomorrow(questions_dict[position]['id'])
+            check_positions_are_valid(self.current_date)
+            check_positions_are_valid(self.tomorrow_date)
+        
 
 if __name__ == "__main__":
     # lauch every class that inherits from UnitTests, and run all methods that start with "test_"
@@ -58,4 +157,3 @@ if __name__ == "__main__":
         for name in dir(cls):
             if name.startswith("test_"):
                 getattr(cls(), name)()
-    UnitTests().tearup()

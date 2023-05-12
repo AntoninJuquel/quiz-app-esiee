@@ -69,7 +69,7 @@ class QuizDatabase:
             raise Exception("Could not remove database file")
         self.__init__()
 
-    def get_all_questions(self,date=None):
+    def get_all_questions(self,date):
         cursor = self.db_connection.cursor()
         if date:
             cursor.execute("SELECT * FROM questions WHERE date=? ORDER BY position ASC", (date,))
@@ -86,6 +86,9 @@ class QuizDatabase:
         cursor = self.db_connection.cursor()
 
         date = question['date']
+        print(date)
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        current_date_str = str(current_date)
         if date:
             cursor.execute("SELECT id FROM questions WHERE position=? AND date=?", (question['position'], date))
         else:
@@ -99,9 +102,10 @@ class QuizDatabase:
             cursor.execute("INSERT INTO questions (text, title, image, position, date) VALUES (?, ?, ?, ?, ?)", (
                 question['text'], question['title'], question['image'], question['position'], question['date']))
         else:
-            cursor.execute("INSERT INTO questions (text, title, image, position) VALUES (?, ?, ?, ?)", (
-                question['text'], question['title'], question['image'], question['position']))
+            cursor.execute("INSERT INTO questions (text, title, image, position, date) VALUES (?, ?, ?, ?)", (
+                question['text'], question['title'], question['image'], question['position'], current_date_str))
         question_id = cursor.lastrowid
+        self.db_connection.commit()
         for answer in question['possibleAnswers']:
             cursor.execute("INSERT INTO possible_answers (text, isCorrect, question_id) VALUES (?, ?, ?)", (
                 answer['text'], answer['isCorrect'], question_id))
@@ -153,6 +157,10 @@ class QuizDatabase:
             old_date = row[1]
 
         questions = self.get_all_questions(date=old_date)
+        def update_pos(q_id, pos):
+            cursor.execute("UPDATE questions SET position=? WHERE id=?", (pos, q_id))
+            self.db_connection.commit()
+
         if len(questions) > 0:
             q_arr = []
             for q in questions:
@@ -160,24 +168,35 @@ class QuizDatabase:
             if new_date != old_date:
                 # remove the question_id from q_arr
                 q_arr.pop(old_pos - 1)
+                for i, q in enumerate(q_arr):
+                    q_id = list(q.keys())[0]
+                    pos = i + 1
+                    update_pos(q_id, pos)
+
+                # if there is questions at new date, shift them up
+                questions = self.get_all_questions(date=new_date)
+                if len(questions) > 0:
+                    q_arr = []
+                    for q in questions:
+                        q_arr.append({q["id"]: q["position"]})
+                    for i, q in enumerate(q_arr):
+                        q_id = list(q.keys())[0]
+                        pos = i + 2
+                        update_pos(q_id, pos)
+                # update question to new date, and position to 1
+                cursor.execute("UPDATE questions SET date=?, position=? WHERE id=?", (new_date, 1, question_id))
+                self.db_connection.commit()
+                return
 
             else:
                 my_q = q_arr.pop(old_pos - 1)
                 q_arr.insert(new_pos - 1, my_q)
             
-            def update_pos(q_id, pos):
-                cursor.execute("UPDATE questions SET position=? WHERE id=?", (pos, q_id))
-                self.db_connection.commit()
 
             for i, q in enumerate(q_arr):
                 q_id = list(q.keys())[0]
                 pos = i + 1
                 update_pos(q_id, pos)
-        if new_date != old_date:
-            cursor.execute("UPDATE questions SET date=? WHERE id=?", (new_date, question_id))
-            self.db_connection.commit()
-            question["position"] = 1
-            self.update_question(question)
 
         cursor.execute("UPDATE questions SET text=?, title=?, image=?, position=?, date=? WHERE id=?", (
             question['text'], question['title'], question['image'], question['position'], question['date'], question['id']))
