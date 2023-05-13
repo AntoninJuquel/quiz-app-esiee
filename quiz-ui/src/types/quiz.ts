@@ -25,10 +25,9 @@ export type Question = {
   text: string
   possibleAnswers: Array<PossibleAnswer>
   date: string
-  multipleAnswers: boolean
 }
 
-export type Answer = number[]
+export type Answer = number
 
 export type Token = {
   token: string

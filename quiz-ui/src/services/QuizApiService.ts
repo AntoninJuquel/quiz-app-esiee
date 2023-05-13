@@ -10,6 +10,12 @@ const instance = axios.create({
 })
 
 export default {
+  authenticated() {
+    return !!instance.defaults.headers.common.Authorization
+  },
+  logout() {
+    delete instance.defaults.headers.common.Authorization
+  },
   async call<T>(
     method: string,
     resource: string,
@@ -41,6 +47,12 @@ export default {
   },
   async getQuizInfo(date: string = format(new Date(), 'yyyy-MM-dd')) {
     return this.call<QuizInfo>('get', `quiz-info?date=${date}`)
+  },
+  async getQuestions(date: string = format(new Date(), 'yyyy-MM-dd')) {
+    return this.call<Question[]>('get', `questions?date=${date}`)
+  },
+  async getQuestionById(id: number) {
+    return this.call<Question>('get', `questions/${id}`)
   },
   async getQuestion(position: number, date: string = format(new Date(), 'yyyy-MM-dd')) {
     return this.call<Question>('get', `questions?position=${position}&date=${date}`)
@@ -76,5 +88,8 @@ export default {
   },
   async getCategories() {
     return this.call<Category[]>('get', `categories`)
+  },
+  async deleteCategory(category: Category) {
+    return this.call<Category>('delete', `categories/${category.id}`)
   }
 }

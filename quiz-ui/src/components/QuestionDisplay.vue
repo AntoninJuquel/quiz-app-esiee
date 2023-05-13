@@ -37,23 +37,10 @@ export default {
 
     <v-card-subtitle>{{ question.text }}</v-card-subtitle>
 
-    <v-card-actions class="d-flex flex-column align-start" v-if="question.multipleAnswers">
-      <v-checkbox-btn
-        v-for="(answer, index) in question.possibleAnswers"
-        :key="answer.id"
-        v-model="selected"
-        :label="answer.text"
-        :value="index + 1"
-      ></v-checkbox-btn>
-    </v-card-actions>
-    <v-card-actions v-else>
+    <v-card-actions>
       <v-radio-group v-model="selected" row>
-        <v-radio
-          v-for="(answer, index) in question.possibleAnswers"
-          :key="answer.id"
-          :label="answer.text"
-          :value="[index + 1]"
-        ></v-radio>
+        <v-radio v-for="(answer, index) in question.possibleAnswers" :key="answer.id" :label="answer.text"
+          :value="[index + 1]"></v-radio>
       </v-radio-group>
     </v-card-actions>
 
