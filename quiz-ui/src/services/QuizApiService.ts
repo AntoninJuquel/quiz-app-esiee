@@ -80,6 +80,9 @@ export default {
   async deleteAllQuestions() {
     return this.call<Question>('delete', `questions/all`)
   },
+  async autoGenerateQuestions() {
+    return this.call<Question[]>('post', `create-question-auto`)
+  },
   async deleteAllParticipations() {
     return this.call<Question>('delete', `participations/all`)
   },

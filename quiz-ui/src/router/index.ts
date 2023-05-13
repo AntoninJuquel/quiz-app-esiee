@@ -50,7 +50,7 @@ const router = createRouter({
         {
           path: 'questions/new',
           name: 'AdminQuestionsNewPage',
-          component: () => import('../views/admin/AdminQuestionNewPage.vue'),
+          component: () => import('../views/admin/AdminNewQuestionPage.vue'),
         },
         {
           path: 'scoreboard',

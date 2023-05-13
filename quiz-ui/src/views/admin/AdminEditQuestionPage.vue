@@ -1,5 +1,4 @@
 <script lang="ts">
-import { format, parseISO } from 'date-fns'
 import quizApiService from '@/services/QuizApiService'
 import EditQuestionDisplay from '@/components/EditQuestionDisplay.vue'
 import type { Question } from '@/types/quiz'
@@ -20,7 +19,7 @@ export default {
       quizApiService.updateQuestion(question).then(() => {
         this.getQuestion()
       })
-    },
+    }
   },
   watch: {
     id() {
@@ -37,5 +36,5 @@ export default {
 </script>
 
 <template>
-  <EditQuestionDisplay v-if="question" :question="question" :creation="false" @save-question="saveQuestion" />
+  <EditQuestionDisplay v-if="question" :question="question" @save-question="saveQuestion" />
 </template>

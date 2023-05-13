@@ -16,7 +16,7 @@ export default {
         return this.editedQuestion.possibleAnswers?.find((answer) => answer.isCorrect)?.id ?? -1
       },
       set(value: number) {
-        this.editedQuestion.possibleAnswers = this.editedQuestion.possibleAnswers.map((answer) => {
+        this.editedQuestion.possibleAnswers = this.editedQuestion.possibleAnswers?.map((answer) => {
           return {
             ...answer,
             isCorrect: value === answer.id
@@ -31,14 +31,10 @@ export default {
     })
   },
   props: {
-    creation: {
-      type: Boolean,
-      required: true
-    },
     question: {
       type: Object as () => Question,
       required: true
-    },
+    }
   },
   emits: ['save-question'],
   watch: {
@@ -57,7 +53,9 @@ export default {
       this.$emit('save-question', this.editedQuestion)
     },
     addAnswer() {
-      if (!this.newAnswerInput) { return }
+      if (!this.newAnswerInput) {
+        return
+      }
       this.editedQuestion.possibleAnswers.push({
         id: this.editedQuestion.possibleAnswers.length,
         isCorrect: false,
@@ -80,7 +78,7 @@ export default {
         this.editedQuestion.image = e.target?.result as string
       }
       reader.readAsDataURL(file)
-    },
+    }
   }
 }
 </script>
@@ -88,31 +86,62 @@ export default {
 <template>
   <v-card class="mx-auto" max-width="700">
     <v-card-title>
-      <v-file-input density="compact" variant="underlined" label="Image" @update:model-value="onFileChange"
-        accept="image/png, image/jpeg, image/bmp"></v-file-input>
+      <v-file-input
+        density="compact"
+        variant="underlined"
+        label="Image"
+        @update:model-value="onFileChange"
+        accept="image/png, image/jpeg, image/bmp"
+      ></v-file-input>
     </v-card-title>
 
     <v-img v-if="editedQuestion.image" :src="editedQuestion.image" height="350px" cover></v-img>
 
     <v-card-title>
-      <v-combobox dense v-model="editedQuestion.title" label="Titre" :items="categories.map(cat => cat.name)"
-        item-title="name" item-value="name" clearable></v-combobox>
-      <v-text-field density="compact" variant="underlined" v-model="editedQuestion.text" label="Question"></v-text-field>
+      <v-combobox
+        dense
+        v-model="editedQuestion.title"
+        label="Titre"
+        :items="categories.map((cat) => cat.name)"
+        item-title="name"
+        item-value="name"
+        clearable
+      ></v-combobox>
+      <v-text-field
+        density="compact"
+        variant="underlined"
+        v-model="editedQuestion.text"
+        label="Question"
+      ></v-text-field>
     </v-card-title>
 
     <v-card-text>
       <v-form @submit.prevent="addAnswer">
-        <v-text-field density="compact" variant="underlined" v-model="newAnswerInput" label="Réponse"
-          append-icon="mdi-plus" @click:append="addAnswer"></v-text-field>
+        <v-text-field
+          density="compact"
+          variant="underlined"
+          v-model="newAnswerInput"
+          label="Ajouter une réponse"
+          append-icon="mdi-plus"
+          @click:append="addAnswer"
+        ></v-text-field>
       </v-form>
     </v-card-text>
 
     <v-card-text>
       <v-radio-group v-model="selected" row>
-        <v-sheet class="d-flex" v-for="(answer, index) in editedQuestion.possibleAnswers" :key="index">
+        <v-sheet
+          class="d-flex"
+          v-for="(answer, index) in editedQuestion.possibleAnswers"
+          :key="index"
+        >
           <v-radio :value="answer.id" class="flex-grow-0"></v-radio>
-          <v-text-field v-model="answer.text" variant="underlined" append-icon="mdi-delete"
-            @click:append="removeAnswer(index)"></v-text-field>
+          <v-text-field
+            v-model="answer.text"
+            variant="underlined"
+            append-icon="mdi-delete"
+            @click:append="removeAnswer(index)"
+          ></v-text-field>
         </v-sheet>
       </v-radio-group>
     </v-card-text>

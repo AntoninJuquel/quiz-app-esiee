@@ -22,7 +22,7 @@ export default {
     <p class="text-body-1 mb-4">Tu as terminé le quiz.</p>
     <p class="text-body-1 mb-4">Voici ton score:</p>
     <h3 class="text-h6 text-md-h5 text-lg-h4 mb-4">{{ score }}</h3>
-    <p class="text-body-1 mb-4">{{ emoji }}</p>
+    <p class="text-body-1 mb-4 text-left">{{ emoji }}</p>
     <v-btn color="primary" @click="copyToClipboard" class="mt-4">Copy to clipboard</v-btn>
   </v-sheet>
 </template>
