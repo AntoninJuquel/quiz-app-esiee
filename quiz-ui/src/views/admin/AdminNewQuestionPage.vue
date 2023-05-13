@@ -1,5 +1,4 @@
 <script lang="ts">
-import { format } from 'date-fns'
 import QuizApiService from '@/services/QuizApiService'
 import EditQuestionDisplay from '@/components/EditQuestionDisplay.vue'
 import type { Question } from '@/types/quiz'

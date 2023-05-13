@@ -20,7 +20,7 @@ export default {
         this.getQuestions()
       }
 
-      if (before === 'AdminCategoriesNewPage' || before === 'AdminEditCategoryPage') {
+      if (before === 'AdminNewCategoryPage' || before === 'AdminEditCategoryPage') {
         this.getCategories()
       }
     }

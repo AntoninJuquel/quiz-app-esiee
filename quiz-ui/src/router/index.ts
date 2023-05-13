@@ -39,7 +39,7 @@ const router = createRouter({
         {
           path: 'login',
           name: 'AdminLoginPage',
-          component: () => import('../views/admin/AdminLoginPage.vue'),
+          component: () => import('../views/admin/AdminLoginPage.vue')
         },
         {
           path: 'questions/:id',
@@ -50,13 +50,18 @@ const router = createRouter({
         {
           path: 'questions/new',
           name: 'AdminQuestionsNewPage',
-          component: () => import('../views/admin/AdminNewQuestionPage.vue'),
+          component: () => import('../views/admin/AdminNewQuestionPage.vue')
+        },
+        {
+          path: 'categories/new',
+          name: 'AdminNewCategoryPage',
+          component: () => import('../views/admin/AdminNewCategoryPage.vue')
         },
         {
           path: 'scoreboard',
           name: 'AdminScoreboardPage',
-          component: () => import('../views/admin/AdminScoreboardPage.vue'),
-        },
+          component: () => import('../views/admin/AdminScoreboardPage.vue')
+        }
       ]
     }
   ]

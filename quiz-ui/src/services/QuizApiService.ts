@@ -10,12 +10,6 @@ const instance = axios.create({
 })
 
 export default {
-  authenticated() {
-    return !!instance.defaults.headers.common.Authorization
-  },
-  logout() {
-    delete instance.defaults.headers.common.Authorization
-  },
   async call<T>(
     method: string,
     resource: string,
@@ -62,12 +56,25 @@ export default {
     if (!MULTIPLE_ANSWERS_ENABLED) {
       computedAnswers = answers.flat()
     }
-    return this.call<Score>('post', 'participations', { playerName, answers: computedAnswers, difficulty })
+    return this.call<Score>('post', 'participations', {
+      playerName,
+      answers: computedAnswers,
+      difficulty
+    })
   },
+  //#region Auth
   async login(password: string) {
     const { data } = await this.call<Token>('post', 'login', { password })
     instance.defaults.headers.common.Authorization = `Bearer ${data.token}`
   },
+  authenticated() {
+    return !!instance.defaults.headers.common.Authorization
+  },
+  logout() {
+    delete instance.defaults.headers.common.Authorization
+  },
+  //#endregion
+  //#region Questions
   async createQuestion(question: Question) {
     return this.call<Question>('post', 'questions', question)
   },
@@ -83,16 +90,29 @@ export default {
   async autoGenerateQuestions() {
     return this.call<Question[]>('post', `create-question-auto`)
   },
+  //#endregion
+  //#region Participations
   async deleteAllParticipations() {
     return this.call<Question>('delete', `participations/all`)
   },
-  async rebuildDatabase() {
-    return this.call('post', `rebuild-db`)
-  },
+  //#endregion
+  //#region Categories
   async getCategories() {
     return this.call<Category[]>('get', `categories`)
   },
+  async createCategory(category: Category) {
+    return this.call<Category>('post', `categories`, category)
+  },
+  async updateCategory(category: Category) {
+    return this.call<Category>('put', `categories/${category.id}`, category)
+  },
   async deleteCategory(category: Category) {
     return this.call<Category>('delete', `categories/${category.id}`)
+  },
+  //#endregion
+  //#region Danger Zone
+  async rebuildDatabase() {
+    return this.call('post', `rebuild-db`)
   }
+  //#endregion
 }

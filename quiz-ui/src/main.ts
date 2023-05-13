@@ -12,6 +12,9 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
 
+// Emoji picker
+import 'vue3-emoji-picker/css'
+
 const vuetify = createVuetify({
   components: {
     ...components,
