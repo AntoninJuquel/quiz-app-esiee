@@ -33,7 +33,11 @@ export default {
       } else {
         await QuizApiService.updateQuestion(this.editQuestion)
       }
-      await this.getQuestions()
+      if (this.editQuestion.date !== this.questionsDate) {
+        this.questionsDate = this.editQuestion.date
+      } else {
+        await this.getQuestions()
+      }
       this.editQuestion = null
     },
     async deleteQuestion(question: Question) {

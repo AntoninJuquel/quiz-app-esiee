@@ -41,6 +41,37 @@ export default {
     }
   },
   methods: {
+    onDateChange(payload: Event) {
+      const target = payload.target as HTMLInputElement
+      this.$emit('update:modelValue', {
+        ...this.modelValue,
+        date: target.value
+      })
+    },
+    onFileChange(files: File[]) {
+      const [file] = files
+      if (!file) {
+        this.$emit('update:modelValue', {
+          ...this.modelValue,
+          image: ''
+        })
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.$emit('update:modelValue', {
+          ...this.modelValue,
+          image: e.target?.result as string
+        })
+      }
+      reader.readAsDataURL(file)
+    },
+    updateTitle(title: unknown) {
+      this.$emit('update:modelValue', {
+        ...this.modelValue,
+        title: title as string
+      })
+    },
     addAnswer() {
       if (this.newAnswer === '' || this.modelValue === null) {
         return
@@ -68,30 +99,6 @@ export default {
       this.$emit('update:modelValue', {
         ...this.modelValue,
         possibleAnswers: this.modelValue.possibleAnswers.filter((a) => a.id !== answerId)
-      })
-    },
-    onFileChange(files: File[]) {
-      const [file] = files
-      if (!file) {
-        this.$emit('update:modelValue', {
-          ...this.modelValue,
-          image: ''
-        })
-        return
-      }
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        this.$emit('update:modelValue', {
-          ...this.modelValue,
-          image: e.target?.result as string
-        })
-      }
-      reader.readAsDataURL(file)
-    },
-    updateTitle(title: unknown) {
-      this.$emit('update:modelValue', {
-        ...this.modelValue,
-        title: title as string
       })
     },
     close() {
@@ -140,6 +147,7 @@ export default {
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="save">
+          <input type="date" :value="modelValue?.date" @input="onDateChange" />
           <v-file-input
             density="compact"
             variant="underlined"
