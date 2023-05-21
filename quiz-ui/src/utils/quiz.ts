@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import type { Difficulty } from '@/types/quiz'
 
 export function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
@@ -92,4 +93,13 @@ export function startDifficultyTimer(
   }
 
   return { clear }
+}
+
+export function participationMessage(score: number, emoji: string) {
+  return `J'ai fait un score de ${score} sur le quiz #Schooldle #${format(
+    new Date(),
+    'yyyy-MM-dd'
+  )} !
+${emoji}
+${window.location.origin}`
 }

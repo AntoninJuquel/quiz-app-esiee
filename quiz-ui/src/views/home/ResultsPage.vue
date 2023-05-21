@@ -1,8 +1,7 @@
 <script lang="ts">
-import { format } from 'date-fns'
 import ParticipationStorageService from '@/services/ParticipationStorageService'
 import QuizApiService from '@/services/QuizApiService'
-import { difficultyToString } from '@/utils/quiz'
+import { difficultyToString, participationMessage } from '@/utils/quiz'
 
 export default {
   data() {
@@ -23,20 +22,13 @@ export default {
     },
     emoji() {
       return ParticipationStorageService.getEmoji()
-    },
-    message() {
-      return `J'ai fait un score de ${this.score} sur le quiz #Schooldle #${format(
-        new Date(),
-        'yyyy-MM-dd'
-      )} !
-${this.emoji}
-${window.location.origin}`
     }
   },
   methods: {
     copyToClipboard() {
-      navigator.clipboard.writeText(this.message)
-    }
+      navigator.clipboard.writeText(participationMessage(this.score, this.emoji))
+    },
+    participationMessage
   },
   async created() {
     const quizInfo = await QuizApiService.getQuizInfo()
@@ -92,7 +84,9 @@ ${window.location.origin}`
   <v-container class="bg-surface mt-8 rounded-lg">
     <v-row>
       <v-col cols="12">
-        <p class="text-body-1 text-center text-pre-wrap">{{ message }}</p>
+        <p class="text-body-1 text-center text-pre-wrap">
+          {{ participationMessage(score, emoji) }}
+        </p>
       </v-col>
     </v-row>
 
