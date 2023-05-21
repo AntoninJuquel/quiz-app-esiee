@@ -2,6 +2,7 @@
 import QuizApiService from '@/services/QuizApiService'
 import type { Participation } from '@/types/quiz'
 import EnterQuizDialog from '@/components/EnterQuizDialog.vue'
+import { difficultyToEmoji } from '@/utils/quiz'
 export default {
   data() {
     return {
@@ -26,7 +27,8 @@ export default {
       this.participations = quizInfo.data.scores
       this.numberOfQuestions = quizInfo.data.size
       this.loading = false
-    }
+    },
+    difficultyToEmoji
   },
   created() {
     this.fetchQuizInfo()
@@ -50,11 +52,7 @@ export default {
       <tbody v-if="hasParticipations">
         <tr v-for="(participation, index) in participations" :key="index">
           <td>{{ participation.playerName }}</td>
-          <td>
-            <v-icon v-if="participation.difficulty === 1">mdi-emoticon-excited-outline</v-icon>
-            <v-icon v-else-if="participation.difficulty === 2">mdi-emoticon-neutral-outline</v-icon>
-            <v-icon v-else-if="participation.difficulty === 3">mdi-emoticon-sad-outline</v-icon>
-          </td>
+          <td>{{ difficultyToEmoji(participation.difficulty) }}</td>
           <td>{{ participation.score }}</td>
         </tr>
       </tbody>

@@ -19,6 +19,8 @@ export default {
       this.$emit('update:modelValue', null)
     },
     save() {
+      console.log('Test')
+
       if (this.modelValue === null) {
         return
       }

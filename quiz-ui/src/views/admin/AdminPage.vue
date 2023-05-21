@@ -1,7 +1,7 @@
 <script lang="ts">
 import CategoriesPanel from '@/components/categories/CategoriesPanel.vue'
 import QuestionsPanel from '@/components/questions/QuestionsPanel.vue'
-import ParticipationPanel from '@/components/ParticipationPanel.vue'
+import ParticipationPanel from '@/components/participations/ParticipationsPanel.vue'
 
 import type { Category } from '@/types/quiz'
 

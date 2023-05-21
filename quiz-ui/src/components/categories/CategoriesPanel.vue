@@ -74,33 +74,30 @@ export default {
           <tr>
             <th class="text-left">Emoji</th>
             <th class="text-left">Nom</th>
-            <th class="text-right">
-              <v-btn icon disabled>
-                <v-icon>mdi-pen</v-icon>
-              </v-btn>
-            </th>
-            <th class="text-right">
-              <v-btn icon disabled>
-                <v-icon color="error">mdi-delete</v-icon>
-              </v-btn>
-            </th>
+            <th class="text-right">Action</th>
           </tr>
         </thead>
         <tbody v-if="categories.length > 0">
-          <tr v-for="category in categories" :key="category.id">
-            <td>{{ category.emoji }}</td>
-            <td>{{ category.name }}</td>
-            <td class="text-right">
-              <v-btn icon @click="editCategory = category">
-                <v-icon>mdi-pen</v-icon>
-              </v-btn>
-            </td>
-            <td class="text-right">
-              <v-btn icon @click="deleteCategory(category)">
-                <v-icon color="error">mdi-delete</v-icon>
-              </v-btn>
-            </td>
-          </tr>
+          <v-hover v-for="category in categories" :key="category.id">
+            <template v-slot:default="{ isHovering, props }">
+              <tr
+                v-bind="props"
+                @click="editCategory = category"
+                style="cursor: pointer"
+                :class="{
+                  'bg-background darken-2': isHovering
+                }"
+              >
+                <td>{{ category.emoji }}</td>
+                <td>{{ category.name }}</td>
+                <td class="text-right">
+                  <v-btn icon @click.stop="deleteCategory(category)">
+                    <v-icon color="error">mdi-delete</v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </template>
+          </v-hover>
         </tbody>
       </v-table>
     </v-expansion-panel-text>

@@ -1,7 +1,9 @@
 <script lang="ts">
+import { format, subSeconds } from 'date-fns'
 import ParticipationStorageService from '@/services/ParticipationStorageService'
 import QuizApiService from '@/services/QuizApiService'
 import type { Answer, Question } from '@/types/quiz'
+import { startDifficultyTimer } from '@/utils/quiz'
 export default {
   data() {
     return {
@@ -10,7 +12,11 @@ export default {
       answers: [] as Answer[],
       remainingQuestionIndexes: [] as number[],
       selectedAnswer: 0,
-      dialog: false
+      dialog: false,
+      timer: {
+        value: 0,
+        clear: () => {}
+      }
     }
   },
   computed: {
@@ -34,6 +40,11 @@ export default {
     },
     difficulty() {
       return ParticipationStorageService.getDifficulty()
+    },
+    formatedCountdown() {
+      const date = new Date(0)
+      date.setSeconds(this.timer.value)
+      return format(subSeconds(date, 1), 'mm:ss')
     }
   },
   methods: {
@@ -43,7 +54,7 @@ export default {
       this.questions = questions.data
       this.remainingQuestionIndexes = [...Array(this.questions.length).keys()]
       this.remainingQuestionIndexes.sort(() => Math.random() - 0.5)
-      this.answers = new Array(this.questions.length)
+      this.answers = new Array(this.questions.length).fill(0 as Answer)
       this.loading = false
     },
     async submitAnswers() {
@@ -63,8 +74,6 @@ export default {
       this.answers[this.currentQuestionIndex] = this.selectedAnswer
       this.selectedAnswer = 0
 
-      console.log(this.answers)
-
       if (this.isLastQuestion) {
         this.submitAnswers()
       } else {
@@ -72,14 +81,36 @@ export default {
       }
     }
   },
-  created() {
-    this.getQuestions()
+  async created() {
+    await this.getQuestions()
+
+    const { clear } = startDifficultyTimer(
+      this.difficulty,
+      this.questions.length,
+      (time) => (this.timer.value = time),
+      () => {
+        this.answerQuestion()
+        return this.isLastQuestion
+      },
+      this.submitAnswers
+    )
+
+    this.timer.clear = clear
+  },
+  unmounted() {
+    this.timer.clear()
   }
 }
 </script>
 
 <template>
   <div v-if="hasQuestions">
+    <v-container class="bg-surface mt-8 rounded-lg" v-if="difficulty > 1">
+      <v-card-title class="text-center">
+        <h1 class="text-h2 font-weight-bold">🕒{{ formatedCountdown }}🕒</h1>
+      </v-card-title>
+    </v-container>
+
     <v-container class="bg-surface mt-8 rounded-lg">
       <v-card-title class="text-center">
         <h1 class="text-h5">Question {{ questionNumber }} of {{ questions.length }}</h1>
@@ -90,7 +121,12 @@ export default {
       <v-card-text class="text-center">
         <h2 class="text-h6">{{ currentQuestion.title }}</h2>
 
-        <v-img v-if="currentQuestion.image" :src="currentQuestion.image" height="120" style="cursor: zoom-in">
+        <v-img
+          v-if="currentQuestion.image"
+          :src="currentQuestion.image"
+          height="120"
+          style="cursor: zoom-in"
+        >
           <v-dialog v-model="dialog" activator="parent" width="auto">
             <v-img
               :src="currentQuestion.image"

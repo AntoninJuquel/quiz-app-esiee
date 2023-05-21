@@ -98,11 +98,6 @@ export default {
             <th class="text-left">Réponse possibles</th>
             <th class="text-left">Bonne réponse</th>
             <th class="text-right">
-              <v-btn icon>
-                <v-icon>mdi-pen</v-icon>
-              </v-btn>
-            </th>
-            <th class="text-right">
               <v-btn icon @click="deleteAllQuestions">
                 <v-icon color="error">mdi-delete</v-icon>
               </v-btn>
@@ -110,25 +105,31 @@ export default {
           </tr>
         </thead>
         <tbody v-if="questions.length > 0">
-          <tr v-for="question in questions" :key="question.id">
-            <td>
-              {{ categories?.find((category) => category.name === question.title)?.emoji }}
-              {{ question.title }}
-            </td>
-            <td>{{ question.text }}</td>
-            <td>{{ question.possibleAnswers.length }}</td>
-            <td>{{ question.possibleAnswers.find((answer) => answer.isCorrect)?.text }}</td>
-            <td class="text-right">
-              <v-btn icon @click="editQuestion = question">
-                <v-icon>mdi-pen</v-icon>
-              </v-btn>
-            </td>
-            <td class="text-right">
-              <v-btn icon @click="deleteQuestion(question)">
-                <v-icon color="error">mdi-delete</v-icon>
-              </v-btn>
-            </td>
-          </tr>
+          <v-hover v-for="question in questions" :key="question.id">
+            <template v-slot:default="{ isHovering, props }">
+              <tr
+                v-bind="props"
+                @click="editQuestion = question"
+                style="cursor: pointer"
+                :class="{
+                  'bg-background darken-2': isHovering
+                }"
+              >
+                <td>
+                  {{ categories?.find((category) => category.name === question.title)?.emoji }}
+                  {{ question.title }}
+                </td>
+                <td>{{ question.text }}</td>
+                <td>{{ question.possibleAnswers.length }}</td>
+                <td>{{ question.possibleAnswers.find((answer) => answer.isCorrect)?.text }}</td>
+                <td class="text-right">
+                  <v-btn icon @click.stop="deleteQuestion(question)">
+                    <v-icon color="error">mdi-delete</v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </template>
+          </v-hover>
         </tbody>
 
         <tbody v-else>

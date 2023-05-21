@@ -1,5 +1,6 @@
 <script lang="ts">
 import ParticipationStorageService from '@/services/ParticipationStorageService'
+import { difficultyHint } from '@/utils/quiz'
 export default {
   data() {
     return {
@@ -22,7 +23,8 @@ export default {
       ParticipationStorageService.savePlayerName(this.playerName)
       ParticipationStorageService.saveDifficulty(this.difficulty)
       this.$router.push('/quiz')
-    }
+    },
+    difficultyHint
   }
 }
 </script>
@@ -31,7 +33,7 @@ export default {
   <v-dialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event.valueOf())"
-    max-width="500px"
+    max-width="345px"
   >
     <v-card>
       <v-card-title class="headline">Choisissez un nom</v-card-title>
@@ -43,12 +45,14 @@ export default {
             v-model="difficulty"
             variant="outlined"
             divided
-            class="w-100 justify-center"
+            class="d-flex justify-center"
+            mandatory
           >
             <v-btn :value="1">Facile</v-btn>
             <v-btn :value="2">Moyen</v-btn>
             <v-btn :value="3">Difficile</v-btn>
           </v-btn-toggle>
+          <p class="text-caption text-center">{{ difficultyHint(difficulty) }}</p>
         </v-form>
       </v-card-text>
 

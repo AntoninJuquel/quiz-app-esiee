@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import QuizApiService from '@/services/QuizApiService'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,7 +22,14 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'Admin',
-      component: () => import('../views/admin/AdminPage.vue')
+      component: () => import('../views/admin/AdminPage.vue'),
+      beforeEnter: (to, from, next) => {
+        if (QuizApiService.authenticated()) {
+          next()
+        } else {
+          next('/')
+        }
+      }
     }
   ]
 })
