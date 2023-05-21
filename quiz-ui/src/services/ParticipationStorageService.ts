@@ -1,4 +1,4 @@
-import type { Difficulty } from "@/types/quiz"
+import type { Difficulty } from '@/types/quiz'
 
 export default {
   clear() {
@@ -16,16 +16,16 @@ export default {
   getDifficulty() {
     return parseInt(localStorage.getItem('difficulty') || '1') as Difficulty
   },
-  saveParticipationScore(participationScore: number) {
-    localStorage.setItem('participationScore', participationScore.toString())
+  saveScore(score: number) {
+    localStorage.setItem('score', score.toString())
   },
-  getParticipationScore() {
-    return parseInt(localStorage.getItem('participationScore') || '0')
+  getScore() {
+    return parseInt(localStorage.getItem('score') || '0')
   },
-  saveParticipationEmoji(participationEmoji: string) {
-    localStorage.setItem('participationEmoji', participationEmoji)
+  saveEmoji(emoji: string) {
+    localStorage.setItem('emoji', emoji)
   },
-  getParticipationEmoji() {
-    return localStorage.getItem('participationEmoji') || ''
+  getEmoji() {
+    return localStorage.getItem('emoji') || ''
   }
 }

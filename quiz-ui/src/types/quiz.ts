@@ -1,4 +1,4 @@
-export type Score = {
+export type Participation = {
   playerName: string
   score: number
   difficulty: number
@@ -6,7 +6,7 @@ export type Score = {
 }
 
 export type QuizInfo = {
-  scores: Array<Score>
+  scores: Array<Participation>
   size: number
 }
 

@@ -1,8 +1,14 @@
 import axios, { AxiosError, AxiosHeaders } from 'axios'
 import { format } from 'date-fns'
-import type { Question, QuizInfo, Answer, Token, Difficulty, Category, Score } from '@/types/quiz'
-
-const MULTIPLE_ANSWERS_ENABLED = false
+import type {
+  Question,
+  QuizInfo,
+  Answer,
+  Token,
+  Difficulty,
+  Category,
+  Participation
+} from '@/types/quiz'
 
 const instance = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}`,
@@ -51,14 +57,10 @@ export default {
   async getQuestion(position: number, date: string = format(new Date(), 'yyyy-MM-dd')) {
     return this.call<Question>('get', `questions?position=${position}&date=${date}`)
   },
-  async postAnswers(playerName: string, answers: Answer[], difficulty: Difficulty) {
-    let computedAnswers: Answer[] | number[] = answers
-    if (!MULTIPLE_ANSWERS_ENABLED) {
-      computedAnswers = answers.flat()
-    }
-    return this.call<Score>('post', 'participations', {
+  async postParticipation(playerName: string, difficulty: Difficulty, answers: Answer[]) {
+    return this.call<Participation>('post', 'participations', {
       playerName,
-      answers: computedAnswers,
+      answers,
       difficulty
     })
   },
