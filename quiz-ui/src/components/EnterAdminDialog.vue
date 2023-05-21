@@ -24,6 +24,14 @@ export default {
           this.$emit('update:modelValue', false)
         })
     }
+  },
+  watch: {
+    modelValue(val) {
+      if (val && QuizApiService.authenticated()) {
+        this.$router.push('/admin')
+        this.$emit('update:modelValue', false)
+      }
+    }
   }
 }
 </script>

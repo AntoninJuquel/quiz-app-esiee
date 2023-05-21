@@ -235,7 +235,7 @@ def RemoveCategory(category_id):
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
     q_db = db.QuizDatabase()
-    q_db.remove_category(category_id)
+    q_db.delete_category(category_id)
     return "Ok", 204
 
 @app.route('/categories/<int:category_id>', methods=['PUT'])

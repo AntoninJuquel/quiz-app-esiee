@@ -14,6 +14,10 @@ export default {
     async getQuizInfo() {
       const participations = await QuizApiService.getQuizInfo(this.participationDate)
       this.participations = participations.data.scores
+    },
+    async deleteAllParticipations() {
+      await QuizApiService.deleteAllParticipations()
+      await this.getQuizInfo()
     }
   },
   watch: {
@@ -64,7 +68,10 @@ export default {
         </tbody>
       </v-table>
 
-      <v-btn color="error">Tout supprimer</v-btn>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn color="error" @click="deleteAllParticipations">Tout supprimer</v-btn>
+      </v-card-actions>
     </v-expansion-panel-text>
   </v-expansion-panel>
 </template>
