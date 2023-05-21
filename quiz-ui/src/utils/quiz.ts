@@ -18,11 +18,11 @@ export function difficultyToString(difficulty: Difficulty) {
 export function difficultyToEmoji(difficulty: Difficulty) {
   switch (difficulty) {
     case 1:
-      return '😀'
+      return '🤓'
     case 2:
-      return '😐'
+      return '😎'
     case 3:
-      return '😡'
+      return '🤯'
   }
 }
 

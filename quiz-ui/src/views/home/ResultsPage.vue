@@ -56,7 +56,9 @@ ${window.location.origin}`
 
     <v-row>
       <v-col cols="12">
-        <h3 class="text-h3 text-center">Tu as fait un score de {{ score }}</h3>
+        <h3 class="text-h3 text-center">
+          Tu as fait un score de <span class="text-primary">{{ score }}</span>
+        </h3>
       </v-col>
     </v-row>
 
