@@ -1,4 +1,6 @@
 <script lang="ts">
+import { formatDuration, intervalToDuration } from 'date-fns'
+import { fr } from 'date-fns/locale'
 import QuizApiService from '@/services/QuizApiService'
 import type { Participation } from '@/types/quiz'
 import EnterQuizDialog from '@/components/EnterQuizDialog.vue'
@@ -9,7 +11,9 @@ export default {
       numberOfQuestions: 0,
       participations: [] as Participation[],
       openQuiz: false,
-      loading: false
+      loading: false,
+      interval: 0,
+      timeBeforeQuiz: ''
     }
   },
   computed: {
@@ -28,13 +32,37 @@ export default {
       this.numberOfQuestions = quizInfo.data.size
       this.loading = false
     },
-    difficultyToEmoji
+    difficultyToEmoji,
+    refreshTimer() {
+      const now = new Date()
+      const nextQuiz = new Date()
+      nextQuiz.setHours(24, 0, 0, 0)
+      if (now > nextQuiz) {
+        nextQuiz.setDate(nextQuiz.getDate() + 1)
+      }
+      const duration = intervalToDuration({
+        start: now,
+        end: nextQuiz
+      })
+      this.timeBeforeQuiz = formatDuration(duration, {
+        format: ['hours', 'minutes', 'seconds'],
+        locale: fr,
+        zero: true
+      })
+    }
   },
   created() {
     this.fetchQuizInfo()
+    this.refreshTimer()
+    this.interval = window.setInterval(() => {
+      this.refreshTimer()
+    }, 1000)
   },
   components: {
     EnterQuizDialog
+  },
+  unmounted() {
+    clearInterval(this.interval)
   }
 }
 </script>
@@ -85,6 +113,12 @@ export default {
       :loading="loading"
     >
     </v-btn>
+  </v-container>
+
+  <v-container class="bg-surface mt-8 rounded-lg">
+    <p class="inline text-body-1">
+      Le Prochain quiz est dans <span class="text-primary">{{ timeBeforeQuiz }}</span>
+    </p>
   </v-container>
 
   <EnterQuizDialog v-model="openQuiz"></EnterQuizDialog>
