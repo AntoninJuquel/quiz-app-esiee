@@ -9,13 +9,6 @@ def create_questions(number_of_questions):
     questions = []
     for i in range(number_of_questions):
         questions.append(create_geography_question())
-        questions.append(guess_capital())
-        questions.append(guess_flag())
-        questions.append(find_the_flag())
-        questions.append(guess_continent())
-        questions.append(guess_language())
-        questions.append(guess_currency())
-
         questions.append(create_history_question())
         questions.append(create_musique_question())
     for q in questions:
