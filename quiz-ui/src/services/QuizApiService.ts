@@ -78,16 +78,16 @@ export default {
   async deleteQuestion(question: Question) {
     return this.call<Question>('delete', `questions/${question.id}`)
   },
-  async deleteAllQuestions() {
-    return this.call<Question>('delete', `questions/all`)
+  async deleteAllQuestions(date: string = format(new Date(), 'yyyy-MM-dd')) {
+    return this.call<Question>('delete', `questions/all?date=${date}`)
   },
   async autoGenerateQuestions() {
     return this.call<Question[]>('post', `create-question-auto`)
   },
   //#endregion
   //#region Participations
-  async deleteAllParticipations() {
-    return this.call<Question>('delete', `participations/all`)
+  async deleteAllParticipations(date: string = format(new Date(), 'yyyy-MM-dd')) {
+    return this.call<Question>('delete', `participations/all?date=${date}`)
   },
   //#endregion
   //#region Categories

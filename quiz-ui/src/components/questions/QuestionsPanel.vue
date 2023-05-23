@@ -89,7 +89,7 @@ export default {
       this.questions = this.questions.filter((c) => c.id !== question.id)
     },
     async deleteAllQuestions() {
-      await QuizApiService.deleteAllQuestions()
+      await QuizApiService.deleteAllQuestions(this.questionsDate)
       this.questions = []
     },
     async autoGenerateQuestions() {

@@ -34,7 +34,7 @@ export default {
       }
     },
     async deleteAllParticipations() {
-      await QuizApiService.deleteAllParticipations()
+      await QuizApiService.deleteAllParticipations(this.participationDate)
       await this.getQuizInfo()
     },
     difficultyToEmoji
