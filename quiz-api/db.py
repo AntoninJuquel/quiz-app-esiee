@@ -232,8 +232,9 @@ class QuizDatabase:
     def remove_all_questions(self,date):
         cursor = self.db_connection.cursor()
         if date:
-            cursor.execute("DELETE FROM questions WHERE date=?", (date,))
             cursor.execute("DELETE FROM possible_answers WHERE question_id IN (SELECT id FROM questions WHERE date=?)", (date,))
+            self.db_connection.commit()
+            cursor.execute("DELETE FROM questions WHERE date=?", (date,))
             self.db_connection.commit()
         else:
             cursor.execute("DELETE FROM questions")
