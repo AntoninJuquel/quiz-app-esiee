@@ -137,8 +137,11 @@ def RemoveAllQuestions():
 def RemoveAllParticipations():
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
+    date = None
+    if "date" in request.args:
+        date = request.args.get('date')
     q_db = db.QuizDatabase()
-    q_db.remove_all_participations()
+    q_db.remove_all_participations(date)
     return "Ok", 204
 
 @app.route('/create-question-auto', methods=['POST'])
@@ -250,6 +253,13 @@ def UpdateCategory(category_id):
     q_db = db.QuizDatabase()
     q_db.update_category(payload)
     return "Ok", 204
+
+@app.route('/version', methods=['GET'])
+def GetVersion():
+    version_file = open("VERSION", "r", encoding="utf-8")
+    version = version_file.read()
+    version_file.close()
+    return version, 200
 
 
 if __name__ == "__main__":

@@ -232,6 +232,16 @@ class TestCrudCategory(UnitTests):
                 res = requests.delete(self.test_category_endpoint + "/" + str(category['id']), headers={"Authorization": "Bearer " + self.get_token()})
                 if res.status_code == 204:
                     self.print_success("test_delete_category passed")
+
+    def test_generate_and_delete(self):
+        self.test_create_question_auto_endpoint = self.base_url + "/create-question-auto?number-of-questions=3"
+        token = self.get_token()
+        for i in range(3):
+            res = requests.post(self.test_create_question_auto_endpoint, headers={"Authorization": "Bearer " + token})
+            if res.status_code == 200:
+                self.print_success("test_create_question_auto passed " + str(i + 1) + "/3")
+            else:
+                self.print_error("test_create_question_auto failed")
         
 
 if __name__ == "__main__":

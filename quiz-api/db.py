@@ -314,10 +314,14 @@ class QuizDatabase:
         self.db_connection.commit()
 
 
-    def remove_all_participations(self):
+    def remove_all_participations(self,date):
         cursor = self.db_connection.cursor()
-        cursor.execute("DELETE FROM participations")
-        self.db_connection.commit()
+        if date:
+            cursor.execute("DELETE FROM participations WHERE date=?", (date,))
+            self.db_connection.commit()
+        else:
+            cursor.execute("DELETE FROM participations")
+            self.db_connection.commit()
 
     def get_categories(self):
         cursor = self.db_connection.cursor()
