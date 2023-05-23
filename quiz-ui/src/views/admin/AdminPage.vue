@@ -1,4 +1,6 @@
 <script lang="ts">
+import { version } from '@/../package.json'
+
 import QuizApiService from '@/services/QuizApiService'
 
 import CategoriesPanel from '@/components/categories/CategoriesPanel.vue'
@@ -11,7 +13,8 @@ export default {
   data() {
     return {
       categories: [] as Category[],
-      key: 0
+      key: 0,
+      applicationVersion: version
     }
   },
   methods: {
@@ -41,4 +44,9 @@ export default {
   <v-container class="d-flex justify-center mt-8 rounded-lg">
     <v-btn color="primary" @click="rebuildDatabase">Rebuild Database</v-btn>
   </v-container>
+
+  <v-footer app dark height="50">
+    <v-spacer></v-spacer>
+    <span class="white--text">Version {{ applicationVersion }}</span>
+  </v-footer>
 </template>

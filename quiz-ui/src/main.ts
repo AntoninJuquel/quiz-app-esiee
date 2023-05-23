@@ -15,6 +15,9 @@ import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
 // Emoji picker
 import 'vue3-emoji-picker/css'
 
+// Custom dark theme
+import customDarkTheme from './themes/darkTheme'
+
 const vuetify = createVuetify({
   components: {
     ...components,
@@ -29,7 +32,10 @@ const vuetify = createVuetify({
     }
   },
   theme: {
-    defaultTheme: 'dark'
+    defaultTheme: 'customDarkTheme',
+    themes: {
+      customDarkTheme
+    }
   }
 })
 
