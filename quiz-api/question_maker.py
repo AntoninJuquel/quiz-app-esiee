@@ -5,7 +5,10 @@ import json
 def create_questions(number_of_questions):
     questions = []
     for i in range(number_of_questions):
-        questions.append(create_geography_question())
+        try:
+            questions.append(create_geography_question())
+        except:
+            pass
         questions.append(create_history_question())
         questions.append(create_musique_question())
     for q in questions:
@@ -44,7 +47,8 @@ def guess_capital():
     country = None
     while country is None:
         import random, requests
-        country = requests.get('https://restcountries.com/v3.1/all').json()[random.randint(0, 250)]
+        country = requests.get('https://restcountries.com/v3.1/all')
+        country = country.json()[random.randint(0, 250)]
         if "capital" not in country:
             country = None
     question = {"possibleAnswers":[]}

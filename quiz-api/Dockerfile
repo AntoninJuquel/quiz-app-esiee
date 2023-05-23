@@ -1,5 +1,4 @@
-# Image de l'API basée sur une image python
-FROM python:3.10-alpine
+FROM python:3.9-alpine
 
 # Création et positionnement du répertoire par défaut dans le container
 WORKDIR /app
@@ -23,7 +22,7 @@ ENV FLASK_APP=app.py
 COPY . .
 
 # Informations sur l'image
-LABEL maintainer="Nom Prénom <nom.prénom@esiee.fr>" \
+LABEL maintainer="Hiruthayaraj Raj Porus <rajporus.hiruthayaraj@edu.esiee.fr>, Juquel Antonin <antonin.juquel@edu.esiee.fr>" \
     version="1.0"
 
 # Commande de démarrage du serveur gunicorn

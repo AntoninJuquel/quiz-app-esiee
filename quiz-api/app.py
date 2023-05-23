@@ -9,6 +9,7 @@ import json
 from flask_cors import CORS
 
 app = Flask(__name__)
+app.config['TIMEOUT'] = 300
 CORS(app)
 
 def check_auth_header(auth_header):
@@ -125,8 +126,11 @@ def RemoveQuestion(question_id):
 def RemoveAllQuestions():
     if check_auth_header(request.headers.get('Authorization')) is False:
         return {"error":"Unauthorized"}, 401
+    date = None
+    if "date" in request.args:
+        date = request.args.get('date')
     q_db = db.QuizDatabase()
-    q_db.remove_all_questions()
+    q_db.remove_all_questions(date)
     return "Ok", 204
 
 @app.route('/participations/all', methods=['DELETE'])

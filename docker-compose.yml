@@ -8,7 +8,7 @@ services:
     container_name: quiz-local-ui
     restart: unless-stopped
   quiz-local-api:
-    build: ./quiz-ui/
+    build: ./quiz-api/
     image: quiz-local-api
     ports:
       - "5000:5000"

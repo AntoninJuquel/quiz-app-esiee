@@ -229,11 +229,16 @@ class QuizDatabase:
         if next_question_id is not None:
             self.shift_position_down(next_question_id, date)
     
-    def remove_all_questions(self):
+    def remove_all_questions(self,date):
         cursor = self.db_connection.cursor()
-        cursor.execute("DELETE FROM questions")
-        cursor.execute("DELETE FROM possible_answers")
-        self.db_connection.commit()
+        if date:
+            cursor.execute("DELETE FROM questions WHERE date=?", (date,))
+            cursor.execute("DELETE FROM possible_answers WHERE question_id IN (SELECT id FROM questions WHERE date=?)", (date,))
+            self.db_connection.commit()
+        else:
+            cursor.execute("DELETE FROM questions")
+            cursor.execute("DELETE FROM possible_answers")
+            self.db_connection.commit()
 
     def get_question(self, question_id):
         cursor = self.db_connection.cursor()

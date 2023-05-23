@@ -1,9 +1,12 @@
 import requests
 from db import QuizDatabase
+import sys
 
 class UnitTests:
     def __init__(self):
         self.base_url = "http://127.0.0.1:5000"
+        self.current_date = "2021-05-01"
+        self.tomorrow_date = "2021-05-02"
     
     def print_success(self, test_name):
         success_emoji = "✅"
@@ -11,7 +14,10 @@ class UnitTests:
     
     def print_error(self, test_name):
         error_emoji = "❌"
-        print("\033[91m" + error_emoji + " " +  test_name + " \033[0m")
+        # get the line where error occured
+        import inspect
+        line_num = inspect.currentframe().f_back.f_lineno
+        print("\033[91m" + error_emoji + " " +  test_name + " \033[0m" + " at line " + str(line_num))
 
     def get_token(self):
         url = self.base_url + "/login"
@@ -59,8 +65,6 @@ class TestCreateQuestionAuto(UnitTests):
         super().__init__()
         self.number_of_questions = 2
         self.number_of_supported_categories = 3
-        self.current_date = "2021-05-01"
-        self.tomorrow_date = "2021-05-02"
         self.current_cats = ["Géographie", "Histoire", "Musique"]
         self.test_create_question_auto_endpoint = self.base_url + "/create-question-auto?number-of-questions=" + str(self.number_of_questions) + "&date=" + self.current_date
     
@@ -143,6 +147,8 @@ class TestCreateQuestionAuto(UnitTests):
                     self.print_success("positions are valid")
             
 
+        # get num from quiz info
+        num = requests.get(self.base_url + "/quiz-info?date=" + self.current_date).json()['size']
         for position in range(int(num/2) ,num ):
             update_question_to_tomorrow(questions_dict[position]['id'])
             check_positions_are_valid(self.current_date)
@@ -198,6 +204,23 @@ class TestCrudCategory(UnitTests):
                     self.print_error("test_update_category failed")
                 return
         self.print_error("test_update_category failed")
+
+    def test_delete_questions_from_date_tomorrow(self):
+        delete_endpoint = self.base_url + "/questions/all?date=" + self.tomorrow_date
+        res = requests.delete(delete_endpoint, headers={"Authorization": "Bearer " + self.get_token()})
+        if res.status_code == 204:
+            self.print_success("test_delete_questions_from_date_tomorrow passed")
+        else:
+            self.print_error("test_delete_questions_from_date_tomorrow failed")
+        
+        # check todays questions are still there
+        res = requests.get(self.base_url + "/questions?date=" + self.current_date)
+        res = res.json()
+        if len(res) != 0:
+            self.print_success("test_delete_questions_from_date_tomorrow passed")
+        else:
+            self.print_error("test_delete_questions_from_date_tomorrow failed")
+
 
     def test_delete_category(self):
         # get all categories
