@@ -48,6 +48,7 @@ export function startDifficultyTimer(
   endQuiz: () => void
 ) {
   let clear = () => {}
+  let refresh = () => {}
 
   switch (difficulty) {
     case 1:
@@ -63,7 +64,6 @@ export function startDifficultyTimer(
         }
       }, 1000)
       clear = () => {
-        console.log('clearing')
         clearInterval(interval)
       }
       break
@@ -83,8 +83,12 @@ export function startDifficultyTimer(
         }
       }, 1000)
       clear = () => {
-        console.log('clearing')
         clearInterval(interval)
+      }
+
+      refresh = () => {
+        timeRemaining = 6
+        onTimeUpdate(timeRemaining)
       }
       break
     }
@@ -92,7 +96,7 @@ export function startDifficultyTimer(
       break
   }
 
-  return { clear }
+  return { clear, refresh }
 }
 
 export function participationMessage(score: number, emoji: string) {

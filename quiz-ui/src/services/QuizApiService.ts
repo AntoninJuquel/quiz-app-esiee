@@ -81,8 +81,8 @@ export default {
   async deleteAllQuestions(date: string = format(new Date(), 'yyyy-MM-dd')) {
     return this.call<Question>('delete', `questions/all?date=${date}`)
   },
-  async autoGenerateQuestions() {
-    return this.call<Question[]>('post', `create-question-auto`)
+  async autoGenerateQuestions(date: string = format(new Date(), 'yyyy-MM-dd')) {
+    return this.call<Question[]>('post', `create-question-auto?date=${date}`)
   },
   //#endregion
   //#region Participations

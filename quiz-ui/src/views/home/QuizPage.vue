@@ -15,7 +15,8 @@ export default {
       dialog: false,
       timer: {
         value: 0,
-        clear: () => {}
+        clear: () => {},
+        refresh: () => {}
       }
     }
   },
@@ -74,6 +75,8 @@ export default {
       this.answers[this.currentQuestionIndex] = this.selectedAnswer
       this.selectedAnswer = 0
 
+      this.timer.refresh()
+
       if (this.isLastQuestion) {
         this.submitAnswers()
       } else {
@@ -84,7 +87,7 @@ export default {
   async created() {
     await this.getQuestions()
 
-    const { clear } = startDifficultyTimer(
+    const { clear, refresh } = startDifficultyTimer(
       this.difficulty,
       this.questions.length,
       (time) => (this.timer.value = time),
@@ -96,6 +99,7 @@ export default {
     )
 
     this.timer.clear = clear
+    this.timer.refresh = refresh
   },
   unmounted() {
     this.timer.clear()

@@ -95,7 +95,7 @@ export default {
     async autoGenerateQuestions() {
       this.generatingQuestions = true
       try {
-        await QuizApiService.autoGenerateQuestions()
+        await QuizApiService.autoGenerateQuestions(this.questionsDate)
         await this.getQuestions()
       } catch (e) {
         const error = e as AxiosError
