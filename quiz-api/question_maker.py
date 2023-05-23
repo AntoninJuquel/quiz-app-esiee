@@ -9,6 +9,13 @@ def create_questions(number_of_questions):
     questions = []
     for i in range(number_of_questions):
         questions.append(create_geography_question())
+        questions.append(guess_capital())
+        questions.append(guess_flag())
+        questions.append(find_the_flag())
+        questions.append(guess_continent())
+        questions.append(guess_language())
+        questions.append(guess_currency())
+
         questions.append(create_history_question())
         questions.append(create_musique_question())
     for q in questions:
@@ -44,11 +51,9 @@ def create_geography_question():
     return guess_capital()
 
 def guess_capital():
-    country = None
-    while country is None:
+    country = []
+    while "capital" not in country:
         country = geography[random.randint(0, len(geography) - 1)]
-        if "capital" not in country:
-            country = None
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question_img_url = country['flags']['png']
@@ -61,11 +66,9 @@ def guess_capital():
     })
     # get 3 other random countries
     while len(question['possibleAnswers']) < 4:
-        country = geography[random.randint(0, len(geography) - 1)]
-        while country is None:
+        country = []
+        while "capital" not in country:
             country = geography[random.randint(0, len(geography) - 1)]
-            if "capital" not in country:
-                country = None
         if country['capital'][0] not in [a['text'] for a in question['possibleAnswers']]:
             question['possibleAnswers'].append({
                 'text': country['capital'][0],
@@ -139,6 +142,8 @@ def guess_continent():
 def guess_language():
     country = None
     country = geography[random.randint(0, len(geography) - 1)]
+    while "languages" not in country:
+        country = geography[random.randint(0, len(geography) - 1)]
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la langue parlée dans le pays : " + country['name']['common'] + " ?"
@@ -154,7 +159,8 @@ def guess_language():
     # get 3 other random countries
     while len(question['possibleAnswers']) < 4:
         country = geography[random.randint(0, len(geography) - 1)]
-
+        while "languages" not in country:
+            country = geography[random.randint(0, len(geography) - 1)]
         languages = country['languages']
         lang = languages[list(languages.keys())[0]]
         if lang not in [a['text'] for a in question['possibleAnswers']]:
@@ -166,6 +172,8 @@ def guess_language():
 
 def guess_currency():
     country = geography[random.randint(0, len(geography) - 1)]
+    while "currencies" not in country:
+        country = geography[random.randint(0, len(geography) - 1)]
     question = {"possibleAnswers":[]}
     question['title'] = "Géographie"
     question['text'] = "Quelle est la monnaie du pays : " + country['name']['common'] + " ?"
@@ -181,7 +189,8 @@ def guess_currency():
     # get 3 other random countries
     while len(question['possibleAnswers']) < 4:
         country = geography[random.randint(0, len(geography) - 1)]
-
+        while "currencies" not in country:
+            country = geography[random.randint(0, len(geography) - 1)]
         currencies = country['currencies']
         currency = currencies[list(currencies.keys())[0]]['name']
         if currency not in [a['text'] for a in question['possibleAnswers']]:
