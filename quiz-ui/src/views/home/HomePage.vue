@@ -13,7 +13,11 @@ export default {
       openQuiz: false,
       loading: false,
       interval: 0,
-      timeBeforeQuiz: ''
+      timeBeforeQuiz: '',
+
+      snackbar: false,
+      snackbarMessage: '',
+      snackbarColor: ''
     }
   },
   computed: {
@@ -25,12 +29,29 @@ export default {
     }
   },
   methods: {
-    async fetchQuizInfo() {
-      this.loading = true
-      const quizInfo = await QuizApiService.getQuizInfo()
-      this.participations = quizInfo.data.scores
-      this.numberOfQuestions = quizInfo.data.size
-      this.loading = false
+    async getQuizInfo() {
+      try {
+        this.loading = true
+        const quizInfo = await QuizApiService.getQuizInfo()
+        this.participations = quizInfo.data.scores
+        this.numberOfQuestions = quizInfo.data.size
+        this.loading = false
+
+        if (this.hasQuestions) {
+          this.snackbar = true
+          this.snackbarMessage = 'Informations du quiz récupérées'
+          this.snackbarColor = 'success'
+        } else {
+          this.snackbar = true
+          this.snackbarMessage = 'Aucune question disponible'
+          this.snackbarColor = 'warning'
+        }
+      } catch (error) {
+        this.snackbar = true
+        this.snackbarMessage = 'Impossible de récupérer les informations du quiz'
+        this.snackbarColor = 'error'
+        this.loading = false
+      }
     },
     difficultyToEmoji,
     refreshTimer() {
@@ -52,7 +73,7 @@ export default {
     }
   },
   created() {
-    this.fetchQuizInfo()
+    this.getQuizInfo()
     this.refreshTimer()
     this.interval = window.setInterval(() => {
       this.refreshTimer()
@@ -91,9 +112,10 @@ export default {
       </tbody>
     </v-table>
 
-    <p class="inline text-body-1">
+    <p class="inline text-body-1" v-if="hasQuestions">
       Aujourd'hui, il y a <span class="text-primary">{{ numberOfQuestions }}</span> questions
     </p>
+    <p class="inline text-body-1" v-else>Aucune question aujourd'hui, revenez <span class="text-primary">demain</span></p>
     <v-btn
       color="primary"
       size="x-large"
@@ -107,7 +129,7 @@ export default {
     <v-btn
       class="ml-4"
       color="primary"
-      @click="fetchQuizInfo"
+      @click="getQuizInfo"
       icon="mdi-refresh"
       v-if="!hasQuestions"
       :loading="loading"
@@ -122,4 +144,8 @@ export default {
   </v-container>
 
   <EnterQuizDialog v-model="openQuiz"></EnterQuizDialog>
+
+  <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor">
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>

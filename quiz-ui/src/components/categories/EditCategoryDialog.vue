@@ -11,6 +11,14 @@ export default {
     }
   },
   emits: ['update:modelValue', 'save'],
+  data() {
+    return {
+      loading: false,
+      rules: {
+        category: (v: string) => !!v || 'Entrer une categorie'
+      }
+    }
+  },
   methods: {
     onSelectEmoji(emoji: Record<string, string>) {
       this.$emit('update:modelValue', { ...this.modelValue, emoji: emoji.i })
@@ -19,16 +27,19 @@ export default {
       this.$emit('update:modelValue', null)
     },
     save() {
-      console.log('Test')
-
       if (this.modelValue === null) {
         return
       }
 
-      if (this.modelValue.name === '' || this.modelValue.emoji === '') {
+      if (this.modelValue.name === '') {
         return
       }
 
+      if (this.modelValue.emoji === '') {
+        return
+      }
+
+      this.loading = true
       this.$emit('save')
     }
   },
@@ -39,6 +50,11 @@ export default {
   },
   components: {
     EmojiPicker
+  },
+  watch: {
+    modelValue() {
+      this.loading = false
+    }
   }
 }
 </script>
@@ -46,17 +62,18 @@ export default {
 <template>
   <v-dialog :model-value="modelValue !== null" max-width="500" @update:model-value="close">
     <v-card>
-      <v-card-title class="text-h5">
-        <span v-if="creating">Nouvelle Categorie</span>
-        <span v-else>Modifier Categorie</span>
-      </v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="save">
+      <v-form @submit.prevent="save" validate-on="input">
+        <v-card-title class="text-h5">
+          <span v-if="creating">Nouvelle Categorie</span>
+          <span v-else>Modifier Categorie</span>
+        </v-card-title>
+        <v-card-text>
           <v-text-field
             :model-value="modelValue?.name"
             @input="$emit('update:modelValue', { ...modelValue, name: $event.target.value })"
             label="Name"
             required
+            :rules="[rules.category]"
           >
             <template #prepend>
               <span class="mr-2">{{ modelValue?.emoji }}</span>
@@ -69,13 +86,14 @@ export default {
             :hide-group-names="true"
             class="mx-auto mb-4"
           />
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="close">Cancel</v-btn>
-        <v-btn color="primary" @click="save">Save</v-btn>
-      </v-card-actions>
+          <p class="text-center text-red" v-if="!modelValue?.emoji">Choisir un emoji</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="close">Cancel</v-btn>
+          <v-btn color="primary" type="submit" :loading="loading">Save</v-btn>
+        </v-card-actions>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>

@@ -4,6 +4,7 @@ import QuizApiService from '@/services/QuizApiService'
 import type { Question, Category } from '@/types/quiz'
 
 import EditQuestionDialog from './EditQuestionDialog.vue'
+import type { AxiosError } from 'axios'
 
 export default {
   props: {
@@ -16,29 +17,72 @@ export default {
     return {
       questions: [] as Question[],
       questionsDate: format(new Date(), 'yyyy-MM-dd'),
-      editQuestion: null as Question | null
+      editQuestion: null as Question | null,
+      generatingQuestions: false,
+      snackbar: {
+        show: false,
+        text: '',
+        color: '',
+        timeout: 3000
+      }
     }
   },
   methods: {
+    newQuestion() {
+      this.editQuestion = {
+        id: -1,
+        position: 1,
+        title: '',
+        image: '',
+        text: '',
+        possibleAnswers: [],
+        date: this.questionsDate
+      }
+    },
     async getQuestions() {
-      const questions = await QuizApiService.getQuestions(this.questionsDate)
-      this.questions = questions.data
+      try {
+        const questions = await QuizApiService.getQuestions(this.questionsDate)
+        this.questions = questions.data
+      } catch (e) {
+        const error = e as AxiosError
+        this.snackbar = {
+          show: true,
+          text: error.message,
+          color: 'error',
+          timeout: 5000
+        }
+      }
     },
     async saveQuestion() {
       if (this.editQuestion === null) {
         return
       }
-      if (this.editQuestion.id === -1) {
-        await QuizApiService.createQuestion(this.editQuestion)
-      } else {
-        await QuizApiService.updateQuestion(this.editQuestion)
+
+      try {
+        if (this.editQuestion.id === -1) {
+          await QuizApiService.createQuestion(this.editQuestion)
+        } else {
+          await QuizApiService.updateQuestion(this.editQuestion)
+        }
+        if (this.editQuestion.date !== this.questionsDate) {
+          this.questionsDate = this.editQuestion.date
+        } else {
+          await this.getQuestions()
+        }
+        this.editQuestion = null
+      } catch (e) {
+        const error = e as AxiosError
+        this.snackbar = {
+          show: true,
+          text: error.message,
+          color: 'error',
+          timeout: 5000
+        }
+
+        if (this.editQuestion) {
+          this.editQuestion = { ...this.editQuestion }
+        }
       }
-      if (this.editQuestion.date !== this.questionsDate) {
-        this.questionsDate = this.editQuestion.date
-      } else {
-        await this.getQuestions()
-      }
-      this.editQuestion = null
     },
     async deleteQuestion(question: Question) {
       await QuizApiService.deleteQuestion(question)
@@ -49,13 +93,46 @@ export default {
       this.questions = []
     },
     async autoGenerateQuestions() {
-      await QuizApiService.autoGenerateQuestions()
-      await this.getQuestions()
+      this.generatingQuestions = true
+      try {
+        await QuizApiService.autoGenerateQuestions()
+        await this.getQuestions()
+      } catch (e) {
+        const error = e as AxiosError
+        this.snackbar = {
+          show: true,
+          text: error.message,
+          color: 'error',
+          timeout: 5000
+        }
+      }
+      this.generatingQuestions = false
     }
   },
   watch: {
-    questionsDate() {
-      this.getQuestions()
+    async questionsDate() {
+      this.snackbar = {
+        show: true,
+        text: 'Chargement des questions...',
+        color: 'info',
+        timeout: 3000
+      }
+      await this.getQuestions()
+      if (this.questions.length === 0) {
+        this.snackbar = {
+          show: true,
+          text: 'Aucune question pour cette date',
+          color: 'warning',
+          timeout: 5000
+        }
+      } else {
+        this.snackbar = {
+          show: true,
+          text: 'Questions chargées',
+          color: 'success',
+          timeout: 3000
+        }
+      }
     }
   },
   async created() {
@@ -75,21 +152,7 @@ export default {
 
     <v-expansion-panel-text>
       <v-card-actions>
-        <v-btn
-          color="primary"
-          @click="
-            editQuestion = {
-              id: -1,
-              position: 1,
-              title: '',
-              image: '',
-              text: '',
-              possibleAnswers: [],
-              date: questionsDate
-            }
-          "
-          >Nouvelle question</v-btn
-        >
+        <v-btn color="primary" @click="newQuestion">Nouvelle question</v-btn>
         <v-spacer />
         <input type="date" v-model="questionsDate" />
       </v-card-actions>
@@ -144,7 +207,9 @@ export default {
       </v-table>
 
       <v-card-actions>
-        <v-btn color="primary" @click="autoGenerateQuestions">Générer des questions</v-btn>
+        <v-btn color="primary" @click="autoGenerateQuestions" :loading="generatingQuestions"
+          >Générer des questions</v-btn
+        >
         <v-spacer />
         <v-btn color="error" @click="deleteAllQuestions">Tout supprimer</v-btn>
       </v-card-actions>
@@ -152,4 +217,8 @@ export default {
   </v-expansion-panel>
 
   <EditQuestionDialog v-model="editQuestion" :categories="categories" @save="saveQuestion" />
+
+  <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="snackbar.timeout">
+    {{ snackbar.text }}
+  </v-snackbar>
 </template>

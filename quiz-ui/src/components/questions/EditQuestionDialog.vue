@@ -16,7 +16,18 @@ export default {
   data() {
     return {
       newAnswer: '',
-      imagePreview: false
+      imagePreview: false,
+      rules: {
+        title: (v: number) => !!v || 'Choisir un titre',
+        text: (v: string) => !!v || 'Entrer une question'
+      },
+      loading: false,
+      snackbar: {
+        show: false,
+        text: '',
+        color: '',
+        timeout: 3000
+      }
     }
   },
   computed: {
@@ -109,27 +120,53 @@ export default {
         return
       }
 
-      if (
-        this.modelValue.title === '' ||
-        this.modelValue.text === '' ||
-        this.modelValue.possibleAnswers.length === 0 ||
-        this.correctAnswer === undefined
-      ) {
-        console.log(this.modelValue.title)
-        console.log(this.modelValue.text)
-        console.log(this.modelValue.possibleAnswers.length)
-        console.log(this.correctAnswer)
+      if (this.modelValue.title === '' || this.modelValue.text === '') {
         return
       }
 
+      if (this.modelValue.possibleAnswers.length < 2) {
+        this.snackbar = {
+          show: true,
+          text: 'Il faut au moins 2 reponses',
+          color: 'error',
+          timeout: 3000
+        }
+        return
+      }
+
+      if (this.correctAnswer === undefined) {
+        this.snackbar = {
+          show: true,
+          text: 'Il faut au moins une reponse correcte',
+          color: 'error',
+          timeout: 3000
+        }
+        return
+      }
+
+      this.loading = true
       this.$emit('save')
+    }
+  },
+  watch: {
+    modelValue: {
+      handler() {
+        this.newAnswer = ''
+        this.loading = false
+      },
+      deep: true
     }
   }
 }
 </script>
 
 <template>
-  <v-dialog :model-value="modelValue !== null" max-width="500" @update:model-value="close">
+  <v-dialog
+    :model-value="modelValue !== null"
+    max-width="500"
+    @update:model-value="close"
+    persistent
+  >
     <v-dialog v-model="imagePreview" width="auto">
       <v-img
         :src="modelValue?.image"
@@ -141,12 +178,12 @@ export default {
     </v-dialog>
 
     <v-card>
-      <v-card-title class="text-h5">
-        <span v-if="creating">Nouvelle Question</span>
-        <span v-else>Modifier Question</span>
-      </v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="save">
+      <v-form @submit.prevent="save" validate-on="input">
+        <v-card-title class="text-h5">
+          <span v-if="creating">Nouvelle Question</span>
+          <span v-else>Modifier Question</span>
+        </v-card-title>
+        <v-card-text>
           <input type="date" :value="modelValue?.date" @input="onDateChange" />
           <v-file-input
             density="compact"
@@ -167,12 +204,14 @@ export default {
             item-value="name"
             clearable
             required
+            :rules="[rules.title]"
           ></v-combobox>
           <v-text-field
             :model-value="modelValue?.text"
             @input="$emit('update:modelValue', { ...modelValue, text: $event.target.value })"
             label="Question"
             required
+            :rules="[rules.text]"
           ></v-text-field>
           <v-form @submit.prevent="addAnswer">
             <v-text-field
@@ -190,13 +229,17 @@ export default {
               </v-btn>
             </v-row>
           </v-radio-group>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="close">Cancel</v-btn>
-        <v-btn color="primary" @click="save">Save</v-btn>
-      </v-card-actions>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="close">Cancel</v-btn>
+          <v-btn color="primary" type="submit" :loading="loading">Save</v-btn>
+        </v-card-actions>
+      </v-form>
     </v-card>
+
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="snackbar.timeout">
+      {{ snackbar.text }}
+    </v-snackbar>
   </v-dialog>
 </template>

@@ -2,7 +2,7 @@ import random, requests
 import base64
 import json
 
-geography_file = open("data/geographie.json", "r")
+geography_file = open("data/geographie.json", "r", encoding="utf8")
 geography = json.loads(geography_file.read())
 
 def create_questions(number_of_questions):

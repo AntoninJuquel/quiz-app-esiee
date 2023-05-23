@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosHeaders } from 'axios'
+import axios, { AxiosHeaders } from 'axios'
 import { format } from 'date-fns'
 import type {
   Question,
@@ -36,14 +36,6 @@ export default {
       url: resource,
       data
     })
-      .then((response) => {
-        return { status: response.status, data: response.data }
-      })
-      .catch((err: AxiosError) => {
-        const error = new Error(err.message)
-        error.name = err.name
-        throw error
-      })
   },
   async getQuizInfo(date: string = format(new Date(), 'yyyy-MM-dd')) {
     return this.call<QuizInfo>('get', `quiz-info?date=${date}`)
