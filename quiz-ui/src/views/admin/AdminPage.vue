@@ -41,7 +41,7 @@ export default {
     </v-expansion-panels>
   </v-container>
 
-  <v-container class="d-flex justify-center mt-8 rounded-lg">
+  <v-container class="d-flex justify-center mt-2 mb-12 rounded-lg">
     <v-btn color="primary" @click="rebuildDatabase">Rebuild Database</v-btn>
   </v-container>
 
