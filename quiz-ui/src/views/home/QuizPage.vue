@@ -130,8 +130,9 @@ export default {
           :src="currentQuestion.image"
           height="120"
           style="cursor: zoom-in"
+          @click="dialog = true"
         >
-          <v-dialog v-model="dialog" activator="parent" width="auto">
+          <v-dialog v-model="dialog" width="auto">
             <v-img
               :src="currentQuestion.image"
               width="90vw"
